@@ -5,9 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import io.prediction.Event;
-import io.prediction.EventClient;
-
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -16,7 +15,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -42,41 +40,33 @@ public class MainActivity extends ActionBarActivity {
 
     public void onClickView(View v)
     {
-        EventClient client = new EventClient("wERSmq7bExLqaTR9FyJKMJtEOTu0ikH74Sf4ovyLc8G3vWGNsSX2NCa29YVshWLu",
-                "163.152.21.217");
+        TextView responseText = (TextView)findViewById(R.id.responseText);
+        String response = null;
+        EventClient eventClient = new EventClient();
 
         switch (v.getId())
         {
             case R.id.rate:
-                // A user rates an item
-                Event rateEvent = new Event()
-                        .event("rate")
-                        .entityType("user")
-                        .entityId("0")
-                        .targetEntityType("item")
-                        .targetEntityId("0")
-                        .property("rating", new Float("5"));
+                eventClient.execute("rate");
                 try {
-                    client.createEvent(rateEvent);
-                } finally {
-                    return;
+                    response = eventClient.get(); // get eventId
+                } catch (Exception e) {
+                    Toast.makeText(this, "다시 시도해주세요", Toast.LENGTH_SHORT);
                 }
-
+                responseText.setText(response);
+                responseText.setTextSize(20);
+                break;
 
             case R.id.buy:
-                // A user buys an item
-                Event buyEvent = new Event()
-                        .event("buy")
-                        .entityType("user")
-                        .entityId("0")
-                .targetEntityType("item")
-                    .targetEntityId("0");
-
+                eventClient.execute("rate");
                 try {
-                    client.createEvent(buyEvent);
-                } finally {
-                    return;
+                    response = eventClient.get(); // get eventId
+                } catch (Exception e) {
+                    Toast.makeText(this, "다시 시도해주세요", Toast.LENGTH_SHORT);
                 }
+                responseText.setText(response);
+                responseText.setTextSize(20);
+                break;
         }
     }
 }

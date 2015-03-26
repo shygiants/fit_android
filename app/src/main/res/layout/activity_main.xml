@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/responseText"
         android:text="fit"
         android:textSize="70sp"
         android:gravity="center"
