@@ -5,13 +5,20 @@ import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -61,7 +68,7 @@ class EventClient extends AsyncTask<String, Void, String>
         }
     }
 
-    private JSONObject getJsonEvent(String event) throws JSONException
+    protected JSONObject getJsonEvent(String event) throws JSONException
     {
         JSONObject eventJson = new JSONObject();
         eventJson.put("event", event);
@@ -75,5 +82,54 @@ class EventClient extends AsyncTask<String, Void, String>
         eventJson.put("properties", properties);
 
         return eventJson;
+    }
+}
+
+class RateEvent extends EventClient {
+//    private String url = "http://163.152.21.217/eventserver/rate";
+    private String url = "http://192.168.0.26:8080/index.php/eventserver/rate";
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected String doInBackground(String... params) {
+
+        String rating = params[0];
+        ArrayList<NameValuePair> postData = new ArrayList<>();
+        postData.add(new BasicNameValuePair("userId", "shygiants"));
+        postData.add(new BasicNameValuePair("rating", rating));
+        postData.add(new BasicNameValuePair("itemId", "item1"));
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(url);
+
+        try {
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postData, "UTF-8");
+            httpPost.setEntity(entity);
+
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            String responseText = EntityUtils.toString(httpResponse.getEntity());
+            JSONObject responseJson = new JSONObject(responseText);
+            return responseJson.getString("eventId");
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            Log.e("RateClient", "ClientProtocolException");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("RateClient", "IOException");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("RateClient", "JSONException");
+        }
+
+        return null;
     }
 }

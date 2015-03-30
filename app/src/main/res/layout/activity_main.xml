@@ -6,29 +6,65 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/responseText"
-        android:text="fit"
-        android:textSize="70sp"
-        android:gravity="center"
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2"/>
+        android:layout_weight="9"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/responseText"
+        android:textColor="#2c3e50"
+        android:text="Rating"
+        android:textSize="20sp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/rating">
+        <RadioButton
+            android:id="@+id/rate1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1"/>
+        <RadioButton
+            android:id="@+id/rate2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="2"/>
+        <RadioButton
+            android:id="@+id/rate3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="3"/>
+        <RadioButton
+            android:id="@+id/rate4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="4"/>
+        <RadioButton
+            android:id="@+id/rate5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="5"/>
+        </RadioGroup>
 
     <Button
         android:id="@+id/rate"
         android:text="Rate"
-        android:textSize="50sp"
+        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:onClick="onClickView"/>
-    <Button
-        android:id="@+id/buy"
-        android:text="Buy"
-        android:textSize="50sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
+        android:layout_weight="1"
         android:onClick="onClickView"/>
 </LinearLayout>

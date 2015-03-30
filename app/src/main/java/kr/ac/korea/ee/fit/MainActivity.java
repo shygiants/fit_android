@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,32 +41,39 @@ public class MainActivity extends ActionBarActivity {
 
     public void onClickView(View v)
     {
-        TextView responseText = (TextView)findViewById(R.id.responseText);
         String response = null;
-        EventClient eventClient = new EventClient();
+        RateEvent rateEvent = new RateEvent();
 
         switch (v.getId())
         {
             case R.id.rate:
-                eventClient.execute("rate");
+                String rating = null;
+                switch (((RadioGroup)findViewById(R.id.rating)).getCheckedRadioButtonId())
+                {
+                    case R.id.rate1:
+                        rating = "1";
+                        break;
+                    case R.id.rate2:
+                        rating = "2";
+                        break;
+                    case R.id.rate3:
+                        rating = "3";
+                        break;
+                    case R.id.rate4:
+                        rating = "4";
+                        break;
+                    case R.id.rate5:
+                        rating = "5";
+                        break;
+                }
+                rateEvent.execute(rating);
                 try {
-                    response = eventClient.get(); // get eventId
+                    response = rateEvent.get(); // get eventId
                 } catch (Exception e) {
                     Toast.makeText(this, "다시 시도해주세요", Toast.LENGTH_SHORT);
                 }
-                responseText.setText(response);
-                responseText.setTextSize(20);
                 break;
-
-            case R.id.buy:
-                eventClient.execute("rate");
-                try {
-                    response = eventClient.get(); // get eventId
-                } catch (Exception e) {
-                    Toast.makeText(this, "다시 시도해주세요", Toast.LENGTH_SHORT);
-                }
-                responseText.setText(response);
-                responseText.setTextSize(20);
+            default:
                 break;
         }
     }
