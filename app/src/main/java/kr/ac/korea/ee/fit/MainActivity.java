@@ -42,7 +42,9 @@ public class MainActivity extends ActionBarActivity {
     public void onClickView(View v)
     {
         String response = null;
+        TextView responseText= (TextView)findViewById(R.id.responseText);
         RateEvent rateEvent = new RateEvent();
+        Authenticator auth = new Authenticator();
 
         switch (v.getId())
         {
@@ -66,9 +68,11 @@ public class MainActivity extends ActionBarActivity {
                         rating = "5";
                         break;
                 }
-                rateEvent.execute(rating);
+//                rateEvent.execute(rating);
+                auth.execute();
                 try {
-                    response = rateEvent.get(); // get eventId
+//                    response = rateEvent.get();
+                    responseText.setText(auth.get()); // get eventId
                 } catch (Exception e) {
                     Toast.makeText(this, "다시 시도해주세요", Toast.LENGTH_SHORT);
                 }
