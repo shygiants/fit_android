@@ -13,6 +13,7 @@ public class Event extends PostData {
         add(new BasicNameValuePair("rating", rating));
         add(new BasicNameValuePair("itemId", itemId));
 
-        url = "http://" + ipAddress + "/index.php/eventServer/rate";
+        url = "http://" + ipAddress + "/eventServer/rate";
+        method = "post";
     }
 }

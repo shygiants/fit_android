@@ -3,17 +3,22 @@ package kr.ac.korea.ee.fit.client;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
+import org.apache.http.NameValuePair;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 import kr.ac.korea.ee.fit.model.PostData;
 
@@ -22,7 +27,10 @@ import kr.ac.korea.ee.fit.model.PostData;
  */
 public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, JSONObject>{
 
-    protected String url;
+    protected URL url;
+
+    final public static String PUT = "Cookie";
+    final public static String GET = "Set-Cookie";
 
     @Override
     protected void onPostExecute(JSONObject result) {
@@ -37,32 +45,77 @@ public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, 
     @Override
     protected JSONObject doInBackground(T... params) {
 
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(url);
-        JSONObject responseJson = null;
-
         try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params[0], "UTF-8");
-            httpPost.setEntity(entity);
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            responseJson = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setDoInput(true);
+
+            if (params[0].method == "post") {
+                connection.setDoOutput(true);
+
+                OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                writer.write(postToString(params[0]));
+                writer.flush();
+                writer.close();
+                outputStream.close();
+            }
+
+            InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null)
+                stringBuilder.append(line+"\n");
+
+            reader.close();
+            inputStream.close();
+
+//            String cookie = "null";
+//            Map m = connection.getHeaderFields();
+//            if (m.containsKey(GET)) {
+//                Collection c =(Collection)m.get(GET);
+//                for(Iterator i = c.iterator(); i.hasNext(); ) {
+//                    cookie = (String)i.next();
+//                }
+//                Log.i("Cookie", cookie);
+//            }
+
+            connection.disconnect();
+
+            JSONObject responseJson = new JSONObject(stringBuilder.toString());
 
             return responseJson;
 
-        } catch (ClientProtocolException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("Authenticator", "ClientProtocolException");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Authenticator", "IOException");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("Authenticator", "JSONException");
-            Log.e("Authenticator", "Response Text - " + responseJson);
+            Log.e("HTTPClient", "Exception");
         }
 
         return null;
     }
 
-    public abstract void start(T params);
+    private String postToString(T params) throws UnsupportedEncodingException
+    {
+        StringBuilder result = new StringBuilder();
+        boolean isFirst = true;
+
+        for (NameValuePair pair : params)
+        {
+            if (isFirst)
+                isFirst = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
+    public abstract void start(T params) throws MalformedURLException;
 }

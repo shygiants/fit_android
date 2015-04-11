@@ -55,4 +55,12 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/loginTestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login Test"
+        android:textAllCaps="false"
+        android:onClick="onClickView"/>
+
 </LinearLayout>

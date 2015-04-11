@@ -12,9 +12,13 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.Authenticator;
 import kr.ac.korea.ee.fit.model.Credential;
+import kr.ac.korea.ee.fit.model.Get;
 
 
 public class AuthenticatorActivity extends ActionBarActivity {
@@ -23,6 +27,8 @@ public class AuthenticatorActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authenticator);
+
+        CookieHandler.setDefault(new CookieManager());
     }
 
 
@@ -87,9 +93,29 @@ public class AuthenticatorActivity extends ActionBarActivity {
                     Log.e("AuthenticatorActivity", "auth.get Exception");
                 }
 
-                TextView response_reg = (TextView) findViewById(R.id.responseText);
+                TextView response_reg = (TextView)findViewById(R.id.responseText);
                 try {
                     response_reg.setText("Registered: " + ((registered != null) ? registered.getString("is_registered") : "null"));
+                } catch (JSONException e) {
+                    Log.e("AuthenticatorActivity", "JSONException");
+                }
+                break;
+            case R.id.loginTestButton:
+                Get get = new Get();
+
+                Authenticator get_auth = new Authenticator();
+                get_auth.start(get);
+
+                JSONObject is_login = null;
+                try {
+                    is_login = get_auth.get();
+                } catch (Exception e) {
+                    Log.e("AuthenticatorActivity", "auth.get Exception");
+                }
+
+                TextView is_login_text = (TextView)findViewById(R.id.responseText);
+                try {
+                    is_login_text.setText("Is Login: " + ((is_login != null) ? is_login.getString("is_login") : "null"));
                 } catch (JSONException e) {
                     Log.e("AuthenticatorActivity", "JSONException");
                 }
