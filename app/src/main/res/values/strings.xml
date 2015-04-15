@@ -4,7 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_authenticator">AuthenticatorActivity</string>
-    <string name="title_fashion_list">Fashions</string>
-    <string name="title_fashion_detail">Fashion Detail</string>
+    <string name="title_activity_feed">FeedActivity</string>
 
 </resources>
