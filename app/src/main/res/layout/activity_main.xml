@@ -15,6 +15,14 @@
         android:text="Auth"
         android:textAllCaps="false"
         android:onClick="onClickView"/>
+    <Button
+        android:id="@+id/feedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="Feed"
+        android:textAllCaps="false"
+        android:onClick="onClickView"/>
 
     <ImageView
         android:layout_width="match_parent"

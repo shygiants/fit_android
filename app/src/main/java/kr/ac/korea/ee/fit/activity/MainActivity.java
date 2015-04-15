@@ -45,6 +45,10 @@ public class MainActivity extends ActionBarActivity {
             case R.id.authButton:
                 Intent auth = new Intent(this, AuthenticatorActivity.class);
                 startActivity(auth);
+                break;
+            case R.id.feedButton:
+                Intent feed = new Intent(this, FashionListActivity.class);
+                startActivity(feed);
             default:
                 break;
         }

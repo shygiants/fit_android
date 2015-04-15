@@ -21,11 +21,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import kr.ac.korea.ee.fit.model.PostData;
+import kr.ac.korea.ee.fit.model.Request;
 
 /**
  * Created by SHYBook_Air on 15. 4. 3..
  */
-public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, JSONObject>{
+public class HTTPClient<T extends Request> extends AsyncTask<T, Void, JSONObject>{
 
     protected URL url;
 
@@ -50,13 +51,13 @@ public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, 
 
             connection.setDoInput(true);
 
-            if (params[0].method == "post") {
+            if (params[0].getMethod() == "post") {
                 connection.setDoOutput(true);
 
                 OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write(postToString(params[0]));
+                writer.write(postToString((PostData)params[0]));
                 writer.flush();
                 writer.close();
                 outputStream.close();
@@ -97,12 +98,12 @@ public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, 
         return null;
     }
 
-    private String postToString(T params) throws UnsupportedEncodingException
+    private String postToString(PostData params) throws UnsupportedEncodingException
     {
         StringBuilder result = new StringBuilder();
         boolean isFirst = true;
 
-        for (NameValuePair pair : params)
+        for (NameValuePair pair : params.getData())
         {
             if (isFirst)
                 isFirst = false;
@@ -117,5 +118,15 @@ public abstract class HTTPClient<T extends PostData> extends AsyncTask<T, Void, 
         return result.toString();
     }
 
-    public abstract void start(T params) throws MalformedURLException;
+    public void start(T params) {
+
+        try {
+            url = new URL(params.getURL());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("HTTPClient", "Exception");
+        }
+
+        execute(params);
+    }
 }

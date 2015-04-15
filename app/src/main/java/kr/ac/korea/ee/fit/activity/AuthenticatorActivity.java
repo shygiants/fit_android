@@ -16,9 +16,8 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 
 import kr.ac.korea.ee.fit.R;
-import kr.ac.korea.ee.fit.client.Authenticator;
+import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.Credential;
-import kr.ac.korea.ee.fit.model.Get;
 
 
 public class AuthenticatorActivity extends ActionBarActivity {
@@ -61,7 +60,7 @@ public class AuthenticatorActivity extends ActionBarActivity {
                 String password = ((EditText) findViewById(R.id.passwordText)).getText().toString();
                 Credential credential = new Credential(email, password);
 
-                Authenticator auth = new Authenticator();
+                HTTPClient<Credential> auth = new HTTPClient<>();
                 auth.start(credential);
 
                 JSONObject authenticated = null;
@@ -83,13 +82,14 @@ public class AuthenticatorActivity extends ActionBarActivity {
                 String password_reg = ((EditText) findViewById(R.id.passwordText)).getText().toString();
                 Credential credential_reg = new Credential(email_reg, password_reg, password_reg, "Sanghun", "Yun");
 
-                Authenticator reg = new Authenticator();
+                HTTPClient<Credential> reg = new HTTPClient<>();
                 reg.start(credential_reg);
 
                 JSONObject registered = null;
                 try {
                     registered = reg.get();
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Log.e("AuthenticatorActivity", "auth.get Exception");
                 }
 
@@ -97,29 +97,30 @@ public class AuthenticatorActivity extends ActionBarActivity {
                 try {
                     response_reg.setText("Registered: " + ((registered != null) ? registered.getString("is_registered") : "null"));
                 } catch (JSONException e) {
+                    e.printStackTrace();
                     Log.e("AuthenticatorActivity", "JSONException");
                 }
                 break;
-            case R.id.loginTestButton:
-                Get get = new Get();
-
-                Authenticator get_auth = new Authenticator();
-                get_auth.start(get);
-
-                JSONObject is_login = null;
-                try {
-                    is_login = get_auth.get();
-                } catch (Exception e) {
-                    Log.e("AuthenticatorActivity", "auth.get Exception");
-                }
-
-                TextView is_login_text = (TextView)findViewById(R.id.responseText);
-                try {
-                    is_login_text.setText("Is Login: " + ((is_login != null) ? is_login.getString("is_login") : "null"));
-                } catch (JSONException e) {
-                    Log.e("AuthenticatorActivity", "JSONException");
-                }
-                break;
+//            case R.id.loginTestButton:
+//                Get get = new Get();
+//
+//                Authenticator get_auth = new Authenticator();
+//                get_auth.start(get);
+//
+//                JSONObject is_login = null;
+//                try {
+//                    is_login = get_auth.get();
+//                } catch (Exception e) {
+//                    Log.e("AuthenticatorActivity", "auth.get Exception");
+//                }
+//
+//                TextView is_login_text = (TextView)findViewById(R.id.responseText);
+//                try {
+//                    is_login_text.setText("Is Login: " + ((is_login != null) ? is_login.getString("is_login") : "null"));
+//                } catch (JSONException e) {
+//                    Log.e("AuthenticatorActivity", "JSONException");
+//                }
+//                break;
         }
     }
 }

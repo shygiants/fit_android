@@ -7,13 +7,16 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class Event extends PostData {
 
-    public Event(String userId, String rating, String itemId)
-    {
-        add(new BasicNameValuePair("userId", userId));
-        add(new BasicNameValuePair("rating", rating));
-        add(new BasicNameValuePair("itemId", itemId));
+    final String url = "http://" + ipAddress + "/eventServer/rate";
 
-        url = "http://" + ipAddress + "/eventServer/rate";
-        method = "post";
+    public Event(String userId, String rating, String itemId) {
+        data.add(new BasicNameValuePair("userId", userId));
+        data.add(new BasicNameValuePair("rating", rating));
+        data.add(new BasicNameValuePair("itemId", itemId));
+    }
+
+    @Override
+    public String getURL() {
+        return url;
     }
 }

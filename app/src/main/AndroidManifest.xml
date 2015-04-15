@@ -22,6 +22,18 @@
             android:name=".activity.AuthenticatorActivity"
             android:label="@string/title_activity_authenticator" >
         </activity>
+        <activity
+            android:name=".activity.FashionListActivity"
+            android:label="@string/title_fashion_list" >
+        </activity>
+        <activity
+            android:name=".activity.FashionDetailActivity"
+            android:label="@string/title_fashion_detail"
+            android:parentActivityName=".activity.FashionListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="kr.ac.korea.ee.fit.activity.FashionListActivity" />
+        </activity>
     </application>
 
 </manifest>
