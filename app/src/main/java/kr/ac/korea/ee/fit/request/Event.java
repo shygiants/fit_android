@@ -1,4 +1,4 @@
-package kr.ac.korea.ee.fit.model;
+package kr.ac.korea.ee.fit.request;
 
 import org.apache.http.message.BasicNameValuePair;
 

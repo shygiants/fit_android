@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.client.ImgGetter;
 import kr.ac.korea.ee.fit.model.FashionCard;
-import kr.ac.korea.ee.fit.model.Feed;
+import kr.ac.korea.ee.fit.request.Feed;
 
 /**
  * Created by SHYBook_Air on 15. 4. 15..
@@ -61,7 +61,6 @@ public class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.
 
             for (int i = 0; i < cards_json.length(); i++) {
                 JSONObject card_json = cards_json.getJSONObject(i);
-                Log.i("FashionCardAdapter", card_json.getString("img_path"));
                 cards.add(new FashionCard(card_json));
             }
 

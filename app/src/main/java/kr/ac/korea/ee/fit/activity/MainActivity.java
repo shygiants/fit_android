@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import kr.ac.korea.ee.fit.Authenticator;
 import kr.ac.korea.ee.fit.R;
 
 public class MainActivity extends Activity {
@@ -15,43 +18,32 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+        Authenticator authenticator = Authenticator.get(this);
+        Bundle is_login = authenticator.isLogin();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (is_login.getString(Authenticator.KEY_ERROR_MESSAGE) != null)
+            finish(); // TODO: Dialog
+        if (is_login.getBoolean(Authenticator.IS_LOGIN)) {
+            Intent feed = new Intent(this, FeedActivity.class);
+            startActivity(feed);
+            finish();
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onClickView(View v)
-    {
-        switch (v.getId())
-        {
-            case R.id.authButton:
-                Intent auth = new Intent(this, AuthenticatorActivity.class);
-                startActivity(auth);
-                break;
-            case R.id.feedButton:
+        else if (is_login.getBoolean(Authenticator.HAS_ACCOUNT)) {
+            Bundle signIn = authenticator.signIn();
+            if (signIn.getString(Authenticator.KEY_ERROR_MESSAGE) != null)
+                finish(); // TODO: Dialog
+            if (signIn.getBoolean(Authenticator.IS_LOGIN)) {
                 Intent feed = new Intent(this, FeedActivity.class);
                 startActivity(feed);
-            default:
-                break;
+                finish();
+                return;
+            }
         }
-  }
+
+        // We need to get input from user
+        Intent auth = new Intent(this, SignInActivity.class);
+        startActivity(auth);
+        finish();
+    }
 }

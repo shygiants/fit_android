@@ -1,6 +1,8 @@
-package kr.ac.korea.ee.fit.model;
+package kr.ac.korea.ee.fit.request;
 
 import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 
 /**
  * Created by SHYBook_Air on 15. 4. 3..
@@ -9,14 +11,16 @@ public class Credential extends PostData {
 
     final String url = "http://" + ipAddress + "/authentication/login";
 
-    protected Credential() {}
-
     public Credential(String email, String password) {
+        data = new ArrayList<>();
+
         data.add(new BasicNameValuePair("email", email));
         data.add(new BasicNameValuePair("password", password));
     }
 
     public Credential(String email, String password, String rePassword, String firstName, String lastName) {
+        data = new ArrayList<>();
+
         data.add(new BasicNameValuePair("email", email));
         data.add(new BasicNameValuePair("password", password));
         data.add(new BasicNameValuePair("re_password", rePassword));

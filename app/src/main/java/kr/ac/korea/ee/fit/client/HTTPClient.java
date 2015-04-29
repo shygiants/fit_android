@@ -4,24 +4,25 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.apache.http.NameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import kr.ac.korea.ee.fit.model.PostData;
-import kr.ac.korea.ee.fit.model.Request;
+import kr.ac.korea.ee.fit.request.PostData;
+import kr.ac.korea.ee.fit.request.Request;
 
 /**
  * Created by SHYBook_Air on 15. 4. 3..
@@ -87,9 +88,13 @@ public class HTTPClient<T extends Request> extends AsyncTask<T, Void, JSONObject
             connection.disconnect();
 
             JSONObject responseJson = new JSONObject(stringBuilder.toString());
-
             return responseJson;
-
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            Log.e("HTTPClient", "IOException");
+        } catch (JSONException je) {
+            je.printStackTrace();
+            Log.e("HTTPClient", "JSONException");
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("HTTPClient", "Exception");

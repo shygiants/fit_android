@@ -17,7 +17,7 @@ import java.net.CookieManager;
 
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
-import kr.ac.korea.ee.fit.model.Credential;
+import kr.ac.korea.ee.fit.request.Credential;
 
 
 public class AuthenticatorActivity extends ActionBarActivity {
