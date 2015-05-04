@@ -25,15 +25,18 @@ public class MainActivity extends Activity {
         if (is_login.getString(Authenticator.KEY_ERROR_MESSAGE) != null)
             finish(); // TODO: Dialog
         if (is_login.getBoolean(Authenticator.IS_LOGIN)) {
+            authenticator.onLogin();
             Intent feed = new Intent(this, FeedActivity.class);
             startActivity(feed);
             finish();
+            return;
         }
         else if (is_login.getBoolean(Authenticator.HAS_ACCOUNT)) {
             Bundle signIn = authenticator.signIn();
             if (signIn.getString(Authenticator.KEY_ERROR_MESSAGE) != null)
                 finish(); // TODO: Dialog
             if (signIn.getBoolean(Authenticator.IS_LOGIN)) {
+                authenticator.onLogin();
                 Intent feed = new Intent(this, FeedActivity.class);
                 startActivity(feed);
                 finish();

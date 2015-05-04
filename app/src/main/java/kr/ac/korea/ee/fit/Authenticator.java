@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.Set;
 
 import kr.ac.korea.ee.fit.client.HTTPClient;
+import kr.ac.korea.ee.fit.model.User;
 import kr.ac.korea.ee.fit.request.CheckLogin;
 import kr.ac.korea.ee.fit.request.Credential;
 import kr.ac.korea.ee.fit.request.GetData;
@@ -106,6 +107,10 @@ public class Authenticator {
         editor.putString(EMAIL, email);
         editor.putString(PASSWORD, password);
         editor.commit();
+    }
+
+    public void onLogin() {
+        User.createUser(storage.getString(EMAIL, null));
     }
 }
 
