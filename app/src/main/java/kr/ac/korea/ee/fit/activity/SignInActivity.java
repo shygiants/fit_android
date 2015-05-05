@@ -50,8 +50,24 @@ public class SignInActivity extends Activity {
 
                 break;
             case R.id.signUpButton:
+                Intent signUp = new Intent(this, SignUpActivity.class);
+                startActivityForResult(signUp, 1);
                 break;
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (data.getBooleanExtra(Authenticator.IS_LOGIN, false)) {
+                Intent feed = new Intent(this, FeedActivity.class);
+                startActivity(feed);
+                finish();
+            }
+            else if (data.hasExtra(Authenticator.KEY_ERROR_MESSAGE)) {
+                finish();
+            }
+
+        }
     }
 }

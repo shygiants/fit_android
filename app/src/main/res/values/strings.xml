@@ -2,8 +2,8 @@
     <string name="app_name">fit</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_authenticator">AuthenticatorActivity</string>
     <string name="title_activity_feed">패션 피드</string>
     <string name="title_activity_signIn">로그인</string>
+    <string name="title_activity_signUp">회원가입</string>
 
 </resources>

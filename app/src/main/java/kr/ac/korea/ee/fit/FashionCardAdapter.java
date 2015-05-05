@@ -50,9 +50,13 @@ public class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.
                 e.printStackTrace();
                 Log.e("FashionCardAdapter", "getView Exception");
             }
-            int i;
-            for (i = 0; i < 3; i++) {
+
+            int ratingType = fashionCard.getRatingType();
+
+            for (int i = 0; i < 3; i++) {
                 button[i].setText(ratingTypes[i]);
+                button[i].setTextColor((i + 1 == ratingType)? 0xFFEF5350 : 0xFF42A5F5);
+
                 button[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -74,11 +78,14 @@ public class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.
                         Event ratingEvent = new Event(User.get().getEmail(), fashionCard.getFashionId(), ratingType);
                         HTTPClient<Event> rate = new HTTPClient<>();
                         rate.start(ratingEvent);
-                        JSONObject response = null;
                         try {
-                            response = rate.get();
+                            JSONObject response = rate.get();
                             String success = response.getString("success");
-                            ((Button)v).setText(success);
+                            if (success.equals("true")) {
+                                for (int i = 0; i < 3; i++)
+                                    button[i].setTextColor(0xFF42A5F5);
+                                ((Button)v).setTextColor(0xFFEF5350);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

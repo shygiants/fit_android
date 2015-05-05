@@ -100,6 +100,48 @@ public class Authenticator {
         return result;
     }
 
+    public Bundle signUp(String email, String password, String rePassword, String firstName, String lastName) {
+        Bundle result = new Bundle();
+        // TODO: validation
+        if (email == null || password == null || rePassword == null || lastName == null || firstName == null) {
+            result.putBoolean(IS_LOGIN, false);
+            return result;
+        }
+        if (!password.equals(rePassword)) {
+            Toast.makeText(context, "비밀번호가 맞지 않습니다", Toast.LENGTH_LONG).show();
+            result.putBoolean(IS_LOGIN, false);
+            return result;
+        }
+
+        Credential credential = new Credential(email, password, firstName, lastName);
+        HTTPClient<Credential> register = new HTTPClient<>();
+        register.start(credential);
+
+        try {
+            JSONObject response;
+            response = register.get();
+            if (response.has("error") && response.has("exists")) {
+                Toast.makeText(context, "이메일이 이미 존재합니다", Toast.LENGTH_LONG).show();
+                result.putBoolean(IS_LOGIN, false);
+                return result;
+            }
+            else if (response.has("error")) {
+                result.putString(KEY_ERROR_MESSAGE, "error");
+            }
+            else if (response.getString("is_login").equals("true")) {
+                result.putBoolean(IS_LOGIN, true);
+                saveAccount(email, password);
+                onLogin();
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        result.putBoolean(IS_LOGIN, false);
+        return result;
+    }
+
     private void saveAccount(String email, String password) {
         SharedPreferences.Editor editor = storage.edit();
 

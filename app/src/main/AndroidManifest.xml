@@ -21,16 +21,16 @@
         </activity>
         <activity
             android:screenOrientation="portrait"
-            android:name=".activity.AuthenticatorActivity"
-            android:label="@string/title_activity_authenticator" />
-        <activity
-            android:screenOrientation="portrait"
             android:name=".activity.FeedActivity"
             android:label="@string/title_activity_feed" />
         <activity
             android:screenOrientation="portrait"
             android:name=".activity.SignInActivity"
             android:label="@string/title_activity_signIn"/>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".activity.SignUpActivity"
+            android:label="@string/title_activity_signUp"/>
     </application>
 
 </manifest>

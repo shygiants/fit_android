@@ -12,6 +12,7 @@ public class FashionCard {
     int fashionId;
     String editorName;
     String imgPath;
+    int ratingType;
 
     public FashionCard(int fashion_id, String last_name, String first_name, String img_path) {
         fashionId = fashion_id;
@@ -24,6 +25,22 @@ public class FashionCard {
             fashionId = jsonObject.getInt("id");
             editorName = jsonObject.getString("last_name") + jsonObject.getString("first_name");
             imgPath = jsonObject.getString("img_path");
+            String ratingStr = jsonObject.getString("type_id");
+
+            switch (ratingStr) {
+                case "1":
+                    ratingType = 1;
+                    break;
+                case "2":
+                    ratingType = 2;
+                    break;
+                case "3":
+                    ratingType = 3;
+                    break;
+                default:
+                    ratingType = 0;
+                    break;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("FashionCard", "Constructor Exception");
@@ -41,4 +58,6 @@ public class FashionCard {
     public String getImgPath() {
         return imgPath;
     }
+
+    public int getRatingType() { return ratingType; }
 }
