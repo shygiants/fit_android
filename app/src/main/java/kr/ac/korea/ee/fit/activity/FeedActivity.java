@@ -1,6 +1,7 @@
 package kr.ac.korea.ee.fit.activity;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,11 +22,13 @@ public class FeedActivity extends Activity {
 
         RecyclerView cardList = (RecyclerView) findViewById(R.id.cardList);
 
-        StaggeredGridLayoutManager fashionFeedLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        Configuration config = getResources().getConfiguration();
+        boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
+                Configuration.SCREENLAYOUT_SIZE_LARGE;
 
-//        LinearLayoutManager llm = new LinearLayoutManager(this);
-//        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager fashionFeedLayoutManager =
+                new StaggeredGridLayoutManager((isLarge)? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
+
         cardList.setLayoutManager(fashionFeedLayoutManager);
         cardList.setAdapter(new FashionCardAdapter());
     }
