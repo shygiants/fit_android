@@ -26,7 +26,8 @@ public class MainActivity extends Activity {
             finish(); // TODO: Dialog
         if (is_login.getBoolean(Authenticator.IS_LOGIN)) {
             authenticator.onLogin();
-            Intent feed = new Intent(this, FeedActivity.class);
+//            Intent feed = new Intent(this, FeedActivity.class);
+            Intent feed = new Intent(this, TabActivity.class);
             startActivity(feed);
             finish();
             return;
@@ -37,7 +38,8 @@ public class MainActivity extends Activity {
                 finish(); // TODO: Dialog
             if (signIn.getBoolean(Authenticator.IS_LOGIN)) {
                 authenticator.onLogin();
-                Intent feed = new Intent(this, FeedActivity.class);
+//                Intent feed = new Intent(this, FeedActivity.class);
+                Intent feed = new Intent(this, TabActivity.class);
                 startActivity(feed);
                 finish();
                 return;

@@ -31,6 +31,9 @@
             android:screenOrientation="portrait"
             android:name=".activity.SignUpActivity"
             android:label="@string/title_activity_signUp"/>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".activity.TabActivity"/>
     </application>
 
 </manifest>

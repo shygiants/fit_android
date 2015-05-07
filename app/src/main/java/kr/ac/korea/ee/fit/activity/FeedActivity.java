@@ -3,7 +3,6 @@ package kr.ac.korea.ee.fit.activity;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
@@ -32,5 +31,4 @@ public class FeedActivity extends Activity {
         cardList.setLayoutManager(fashionFeedLayoutManager);
         cardList.setAdapter(new FashionCardAdapter());
     }
-
 }
