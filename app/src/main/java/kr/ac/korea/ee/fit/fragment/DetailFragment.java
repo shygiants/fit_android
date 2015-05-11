@@ -37,10 +37,10 @@ public class DetailFragment extends Fragment {
         arg.putInt(DetailFragment.FASHION_ID, editorId);
         detailFragment.setArguments(arg);
 
-        getParentFragment().getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.tab, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        getFragmentManager()
+            .beginTransaction()
+            .replace(R.id.tab, detailFragment)
+            .addToBackStack(null)
+            .commit();
     }
 }

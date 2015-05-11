@@ -31,9 +31,6 @@ public class HTTPClient<T extends Request> extends AsyncTask<T, Void, JSONObject
 
     protected URL url;
 
-    final public static String PUT = "Cookie";
-    final public static String GET = "Set-Cookie";
-
     @Override
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
@@ -74,16 +71,6 @@ public class HTTPClient<T extends Request> extends AsyncTask<T, Void, JSONObject
 
             reader.close();
             inputStream.close();
-
-//            String cookie = "null";
-//            Map m = connection.getHeaderFields();
-//            if (m.containsKey(GET)) {
-//                Collection c =(Collection)m.get(GET);
-//                for(Iterator i = c.iterator(); i.hasNext(); ) {
-//                    cookie = (String)i.next();
-//                }
-//                Log.i("Cookie", cookie);
-//            }
 
             connection.disconnect();
 

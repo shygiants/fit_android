@@ -23,9 +23,9 @@ public class TabFragment extends android.support.v4.app.Fragment {
             case 0:
                 view = inflater.inflate(R.layout.fragment_tab, container, false);
                 getChildFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.tab, new FeedFragment())
-                        .commit();
+                    .beginTransaction()
+                    .add(R.id.tab, new FeedFragment())
+                    .commit();
                 return view;
             case 1:
                 view = inflater.inflate(R.layout.activity_signin, container, false);

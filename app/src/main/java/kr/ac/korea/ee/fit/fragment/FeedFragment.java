@@ -57,11 +57,11 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         arg.putInt(DetailFragment.FASHION_ID, editorId);
         detailFragment.setArguments(arg);
 
-        getParentFragment().getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.tab, detailFragment)
-                .addToBackStack(null)
-                .commit();
+        getFragmentManager()
+            .beginTransaction()
+            .replace(R.id.tab, detailFragment)
+            .addToBackStack(null)
+            .commit();
     }
 
     private static class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {

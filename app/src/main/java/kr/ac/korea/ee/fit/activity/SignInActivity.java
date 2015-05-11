@@ -22,6 +22,9 @@ import kr.ac.korea.ee.fit.request.Credential;
  */
 public class SignInActivity extends Activity {
 
+    String email;
+    String password;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,21 +35,14 @@ public class SignInActivity extends Activity {
     public void onClickView(View view) {
         switch(view.getId()) {
             case R.id.signInButton:
-                String email = ((EditText) findViewById(R.id.emailText)).getText().toString();
-                String password = ((EditText) findViewById(R.id.passwordText)).getText().toString();
-                Bundle signIn = Authenticator.get(this).signIn(email, password);
-                if (signIn.getString(Authenticator.KEY_ERROR_MESSAGE) != null) {
-                    finish();
-                    return;
-                }
+                email = ((EditText) findViewById(R.id.emailText)).getText().toString();
+                password = ((EditText) findViewById(R.id.passwordText)).getText().toString();
+                // TODO: Form validation
+                Credential inputCredential = new Credential(email, password);
 
-                if (signIn.getBoolean(Authenticator.IS_LOGIN)) {
-                    Intent feed = new Intent(this, TabActivity.class);
-                    startActivity(feed);
-                    finish();
-                } else {
-                    Toast.makeText(this, "아이디나 비밀번호가 올바르지 않습니다", Toast.LENGTH_LONG).show();
-                }
+                // TODO: Progress
+                LoginTask loginTask = new LoginTask();
+                loginTask.start(inputCredential);
 
                 break;
             case R.id.signUpButton:
@@ -59,15 +55,53 @@ public class SignInActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (data.getBooleanExtra(Authenticator.IS_LOGIN, false)) {
-                Intent feed = new Intent(this, TabActivity.class);
-                startActivity(feed);
-                finish();
+            if (data.getBooleanExtra(SignUpActivity.SUCCESS, false)) {
+                email = data.getStringExtra(SignUpActivity.EMAIL);
+                password = data.getStringExtra(SignUpActivity.PASSWORD);
+                onLogin();
             }
-            else if (data.hasExtra(Authenticator.KEY_ERROR_MESSAGE)) {
+            else
                 finish();
-            }
+        }
+    }
 
+    void startTabActivity() {
+        Intent tab = new Intent(this, TabActivity.class);
+        startActivity(tab);
+        finish();
+    }
+
+    void onLogin() {
+        Authenticator.saveAccount(this, email, password);
+        startTabActivity();
+    }
+
+    void onLoginFailed() {
+        Toast.makeText(this, "이메일이나 비밀번호가 잘못 입력하셨습니다", Toast.LENGTH_LONG).show();
+    }
+
+    private class LoginTask extends HTTPClient<Credential> {
+        @Override
+        protected void onPostExecute(JSONObject response) {
+            try {
+                if (response == null || response.has("error"))
+                    throw new Exception();
+
+                if (response.getBoolean("is_login"))
+                    onLogin(); // input account is valid
+                else
+                    onLoginFailed(); // input account is invalid
+            } catch (JSONException e) {
+                // fatal error
+                e.printStackTrace();
+                Log.e("LoginTask", response.toString());
+                finish();
+            } catch (Exception e) {
+                // fatal error
+                e.printStackTrace();
+                // TODO: Dialog
+                finish();
+            }
         }
     }
 }

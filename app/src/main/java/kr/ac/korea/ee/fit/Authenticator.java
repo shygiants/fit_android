@@ -24,9 +24,6 @@ import kr.ac.korea.ee.fit.request.GetData;
  */
 public class Authenticator {
 
-    public final static String IS_LOGIN = "IS_LOGIN";
-    public final static String HAS_ACCOUNT = "HAS_ACCOUNT";
-    public final static String KEY_ERROR_MESSAGE = "ERR_MSG";
     public final static String ACCOUNT = "ACCOUNT";
     public final static String EMAIL = "EMAIL";
     public final static String PASSWORD = "PASSWORD";
@@ -35,124 +32,36 @@ public class Authenticator {
     Context context;
     SharedPreferences storage;
 
-    public static Authenticator get(Context context) {
-        if (authenticator != null) {
-            authenticator.context = context;
-            authenticator.storage = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
-            return authenticator;
-        }
+    public static Credential getSavedAccount(Context context) {
+        SharedPreferences store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
-        authenticator = new Authenticator();
-        authenticator.context = context;
-        authenticator.storage = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
-        return authenticator;
+        if (!store.contains(EMAIL) || !store.contains(PASSWORD))
+            return null;
+
+        String email = store.getString(EMAIL, null);
+        String password = store.getString(PASSWORD, null);
+
+        return new Credential(email, password);
     }
 
-    public Bundle isLogin() {
-        HTTPClient<CheckLogin> checkLogin = new HTTPClient<>();
-        CheckLogin request = new CheckLogin();
-        checkLogin.start(request);
-
-        JSONObject response = null;
-        Bundle result = new Bundle();
-        try {
-            response = checkLogin.get();
-            if (response == null) throw new Exception();
-            result.putBoolean(IS_LOGIN, (response.getString("is_login").equals("true")));
-            result.putBoolean(HAS_ACCOUNT, storage.contains(EMAIL) && storage.contains(PASSWORD));
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "네트워크에 문제가 있습니다", Toast.LENGTH_SHORT).show();
-        }
-
-        result.putString(KEY_ERROR_MESSAGE, "Network");
-        return result;
+    public static void onLogin(Context context) {
+        User.createUser(context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE)
+                .getString(EMAIL, null));
     }
 
-    public Bundle signIn() {
-        String email = storage.getString(EMAIL, null);
-        String password = storage.getString(PASSWORD, null);
+    public static void saveAccount(Context context, String email, String password) {
 
-        return signIn(email, password);
-    }
-
-    public Bundle signIn(String email, String password) {
-        Credential credential = new Credential(email, password);
-        HTTPClient<Credential> signIn = new HTTPClient<>();
-        signIn.start(credential);
-
-        JSONObject response = null;
-        Bundle result = new Bundle();
-        try {
-            response = signIn.get();
-            if (response == null) throw new Exception();
-            boolean is_login = response.getString("is_login").equals("true");
-            result.putBoolean(IS_LOGIN, (is_login));
-            if (is_login) saveAccount(email, password);
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "네트워크에 문제가 있습니다", Toast.LENGTH_SHORT).show();
-        }
-
-        result.putString(KEY_ERROR_MESSAGE, "Network");
-        return result;
-    }
-
-    public Bundle signUp(String email, String password, String rePassword, String firstName, String lastName) {
-        Bundle result = new Bundle();
-        // TODO: validation
-        if (email == null || password == null || rePassword == null || lastName == null || firstName == null) {
-            result.putBoolean(IS_LOGIN, false);
-            return result;
-        }
-        if (!password.equals(rePassword)) {
-            Toast.makeText(context, "비밀번호가 맞지 않습니다", Toast.LENGTH_LONG).show();
-            result.putBoolean(IS_LOGIN, false);
-            return result;
-        }
-
-        Credential credential = new Credential(email, password, firstName, lastName);
-        HTTPClient<Credential> register = new HTTPClient<>();
-        register.start(credential);
-
-        try {
-            JSONObject response;
-            response = register.get();
-            if (response.has("error") && response.has("exists")) {
-                Toast.makeText(context, "이메일이 이미 존재합니다", Toast.LENGTH_LONG).show();
-                result.putBoolean(IS_LOGIN, false);
-                return result;
-            }
-            else if (response.has("error")) {
-                result.putString(KEY_ERROR_MESSAGE, "error");
-            }
-            else if (response.getString("is_login").equals("true")) {
-                result.putBoolean(IS_LOGIN, true);
-                saveAccount(email, password);
-                onLogin();
-                return result;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        result.putBoolean(IS_LOGIN, false);
-        return result;
-    }
-
-    private void saveAccount(String email, String password) {
-        SharedPreferences.Editor editor = storage.edit();
+        SharedPreferences.Editor editor = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE).edit();
 
         editor.clear();
         editor.putString(EMAIL, email);
         editor.putString(PASSWORD, password);
         editor.commit();
+        onLogin(context);
     }
 
-    public void onLogin() {
-        User.createUser(storage.getString(EMAIL, null));
+    public static void deleteAccount(Context context) {
+        context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE).edit().clear().commit();
     }
 }
 
