@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import kr.ac.korea.ee.fit.fragment.TabFragment;
+
 /**
  * Created by SHY_mini on 15. 5. 8..
  */

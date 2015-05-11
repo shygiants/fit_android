@@ -41,7 +41,6 @@ public class SignInActivity extends Activity {
                 }
 
                 if (signIn.getBoolean(Authenticator.IS_LOGIN)) {
-//                    Intent feed = new Intent(this, FeedActivity.class);
                     Intent feed = new Intent(this, TabActivity.class);
                     startActivity(feed);
                     finish();
@@ -61,7 +60,6 @@ public class SignInActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Authenticator.IS_LOGIN, false)) {
-//                Intent feed = new Intent(this, FeedActivity.class);
                 Intent feed = new Intent(this, TabActivity.class);
                 startActivity(feed);
                 finish();

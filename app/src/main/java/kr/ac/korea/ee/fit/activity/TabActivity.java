@@ -2,6 +2,7 @@ package kr.ac.korea.ee.fit.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
@@ -13,14 +14,42 @@ import kr.ac.korea.ee.fit.TabAdapter;
  */
 public class TabActivity extends FragmentActivity {
 
+    int currentPosition;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
 
         final ViewPager viewPager = (ViewPager)findViewById(R.id.viewPager);
-        FragmentPagerAdapter adapter = new TabAdapter(getSupportFragmentManager());
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                currentPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        TabAdapter adapter = new TabAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager tabFragmentManager =
+                getSupportFragmentManager().getFragments().get(currentPosition).getChildFragmentManager();
+        if (tabFragmentManager.getBackStackEntryCount() > 0)
+            tabFragmentManager.popBackStack();
+        else
+            finish();
     }
 }
 
