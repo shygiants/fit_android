@@ -28,10 +28,6 @@ public class Authenticator {
     public final static String EMAIL = "EMAIL";
     public final static String PASSWORD = "PASSWORD";
 
-    static Authenticator authenticator;
-    Context context;
-    SharedPreferences storage;
-
     public static Credential getSavedAccount(Context context) {
         SharedPreferences store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
@@ -56,7 +52,7 @@ public class Authenticator {
         editor.clear();
         editor.putString(EMAIL, email);
         editor.putString(PASSWORD, password);
-        editor.commit();
+        editor.apply();
         onLogin(context);
     }
 

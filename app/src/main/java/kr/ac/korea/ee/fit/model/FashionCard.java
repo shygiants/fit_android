@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.model;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ public class FashionCard {
     int fashionId;
     String editorName;
     String imgPath;
+    Bitmap image;
     int ratingType;
 
     public FashionCard(int fashion_id, String last_name, String first_name, String img_path) {
@@ -46,6 +48,10 @@ public class FashionCard {
             Log.e("FashionCard", "Constructor Exception");
         }
     }
+
+    public void setImage(Bitmap image) { this.image = image; }
+
+    public Bitmap getImage() { return image; }
 
     public int getFashionId() {
         return fashionId;

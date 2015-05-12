@@ -17,13 +17,14 @@ import kr.ac.korea.ee.fit.TabAdapter;
 public class TabActivity extends FragmentActivity {
 
     int currentPosition;
+    ViewPager viewPager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
 
-        final ViewPager viewPager = (ViewPager)findViewById(R.id.viewPager);
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -52,6 +53,10 @@ public class TabActivity extends FragmentActivity {
             tabFragmentManager.popBackStack();
         else
             finish();
+    }
+
+    public void onClick(View view) {
+        viewPager.setCurrentItem(0);
     }
 }
 
