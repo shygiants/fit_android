@@ -6,4 +6,5 @@ package kr.ac.korea.ee.fit;
 public class ResponseException {
 
     public static final String EMAIL = "EmailAlreadyExistException";
+    public static final String NOT_LOGIN = "NotLoginException";
 }

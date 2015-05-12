@@ -8,6 +8,9 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+
 import kr.ac.korea.ee.fit.Authenticator;
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
@@ -19,6 +22,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        CookieHandler.setDefault(new CookieManager());
 
         Credential savedAccount = Authenticator.getSavedAccount(this);
         if (savedAccount != null) {

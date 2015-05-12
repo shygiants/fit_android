@@ -26,6 +26,7 @@ import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.FashionCard;
 import kr.ac.korea.ee.fit.model.User;
+import kr.ac.korea.ee.fit.request.Detail;
 import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.Feed;
 
@@ -51,8 +52,10 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         Configuration config = getResources().getConfiguration();
         boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
                 Configuration.SCREENLAYOUT_SIZE_LARGE;
+//        StaggeredGridLayoutManager fashionFeedLayoutManager =
+//                new StaggeredGridLayoutManager((isLarge) ? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
         StaggeredGridLayoutManager fashionFeedLayoutManager =
-                new StaggeredGridLayoutManager((isLarge) ? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         cardList.setLayoutManager(fashionFeedLayoutManager);
         cardList.setAdapter(fashionCardAdapter);
@@ -60,10 +63,11 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    void startDetailView(int editorId) {
+    void startDetailView(FashionCard fashionCard) {
         DetailFragment detailFragment = new DetailFragment();
         Bundle arg = new Bundle();
-        arg.putInt(DetailFragment.FASHION_ID, editorId);
+        arg.putInt(DetailFragment.FASHION_ID, fashionCard.getFashionId());
+        arg.putParcelable(DetailFragment.IMAGE, fashionCard.getImage());
         detailFragment.setArguments(arg);
 
         getFragmentManager()
@@ -101,7 +105,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startDetailView(fashionCard.getFashionId());
+                        startDetailView(fashionCard);
                     }
                 });
 
@@ -159,6 +163,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        // TODO: Exception
                     }
                 }
             }
@@ -210,6 +215,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    // TODO: Exception
                 }
             }
         }
@@ -237,6 +243,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    // TODO: Exception
                 }
 
                 return null;
