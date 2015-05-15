@@ -52,10 +52,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         Configuration config = getResources().getConfiguration();
         boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
                 Configuration.SCREENLAYOUT_SIZE_LARGE;
-//        StaggeredGridLayoutManager fashionFeedLayoutManager =
-//                new StaggeredGridLayoutManager((isLarge) ? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
         StaggeredGridLayoutManager fashionFeedLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                new StaggeredGridLayoutManager((isLarge) ? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
 
         cardList.setLayoutManager(fashionFeedLayoutManager);
         cardList.setAdapter(fashionCardAdapter);
@@ -72,7 +70,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
 
         getFragmentManager()
             .beginTransaction()
-            .replace(R.id.tab, detailFragment)
+            .replace(android.R.id.tabcontent, detailFragment)
             .addToBackStack(null)
             .commit();
     }

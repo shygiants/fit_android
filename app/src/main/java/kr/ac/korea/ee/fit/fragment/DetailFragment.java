@@ -32,6 +32,7 @@ public class DetailFragment extends Fragment {
 
     public static final String FASHION_ID = "FashionID";
     public static final String IMAGE = "IMAGE";
+
     int fashionId;
     Bitmap image;
 
@@ -66,7 +67,7 @@ public class DetailFragment extends Fragment {
 
         getFragmentManager()
             .beginTransaction()
-            .replace(R.id.tab, detailFragment)
+            .replace(android.R.id.tabcontent, detailFragment)
             .addToBackStack(null)
             .commit();
     }

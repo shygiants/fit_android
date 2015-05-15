@@ -28,8 +28,11 @@ public class Authenticator {
     public final static String EMAIL = "EMAIL";
     public final static String PASSWORD = "PASSWORD";
 
+    static SharedPreferences store = null;
+
     public static Credential getSavedAccount(Context context) {
-        SharedPreferences store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
+        if (store == null)
+            store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
         if (!store.contains(EMAIL) || !store.contains(PASSWORD))
             return null;
@@ -41,13 +44,17 @@ public class Authenticator {
     }
 
     public static void onLogin(Context context) {
-        User.createUser(context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE)
-                .getString(EMAIL, null));
+        if (store == null)
+            store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
+
+        User.createUser(store.getString(EMAIL, null));
     }
 
     public static void saveAccount(Context context, String email, String password) {
+        if (store == null)
+            store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
-        SharedPreferences.Editor editor = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = store.edit();
 
         editor.clear();
         editor.putString(EMAIL, email);
@@ -57,7 +64,10 @@ public class Authenticator {
     }
 
     public static void deleteAccount(Context context) {
-        context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE).edit().clear().commit();
+        if (store == null)
+            store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
+
+        store.edit().clear().apply();
     }
 }
 
