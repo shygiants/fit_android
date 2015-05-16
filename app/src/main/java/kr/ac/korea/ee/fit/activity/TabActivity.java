@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTabHost;
 
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.fragment.FeedFragment;
+import kr.ac.korea.ee.fit.fragment.SearchFragment;
 
 /**
  * Created by SHY_mini on 15. 5. 8..
@@ -26,6 +27,7 @@ public class TabActivity extends FragmentActivity {
 
         // TODO: fill tab content with icon or something
         tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("Feed"), FeedFragment.class, null);
+        tabHost.addTab(tabHost.newTabSpec("search").setIndicator("Search"), SearchFragment.class, null);
     }
 
     @Override
