@@ -41,13 +41,14 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         fashionCardAdapter = new FashionCardAdapter();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        RecyclerView cardList = (RecyclerView) view.findViewById(R.id.cardList);
+        RecyclerView cardList = (RecyclerView)view.findViewById(R.id.cardList);
 
         Configuration config = getResources().getConfiguration();
         boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==

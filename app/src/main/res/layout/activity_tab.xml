@@ -20,7 +20,7 @@
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:tabStripEnabled="false"/>
-        <!--android:background="?android:attr/colorPrimary"/>-->
+        android:tabStripEnabled="false" />
+
 </LinearLayout>
 

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.Set;
 
 import kr.ac.korea.ee.fit.client.HTTPClient;
+import kr.ac.korea.ee.fit.model.SchemaData;
 import kr.ac.korea.ee.fit.model.User;
 import kr.ac.korea.ee.fit.request.CheckLogin;
 import kr.ac.korea.ee.fit.request.Credential;
@@ -48,6 +49,7 @@ public class Authenticator {
             store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
         User.createUser(store.getString(EMAIL, null));
+        SchemaData.Init();
     }
 
     public static void saveAccount(Context context, String email, String password) {

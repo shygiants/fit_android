@@ -1,9 +1,13 @@
 package kr.ac.korea.ee.fit.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
+import android.widget.TabHost;
+
+import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.fragment.FeedFragment;
@@ -16,6 +20,8 @@ public class TabActivity extends FragmentActivity {
     
     FragmentTabHost tabHost;
 
+    ArrayList<Fragment> fragments;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +29,8 @@ public class TabActivity extends FragmentActivity {
         
         tabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         tabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
-        tabHost.getTabWidget().setStripEnabled(false);
+//        tabHost.getTabWidget().setStripEnabled(false);
+        tabHost.getTabWidget().setBackgroundColor(0xFFE0E0E0);
 
         // TODO: fill tab content with icon or something
         tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("Feed"), FeedFragment.class, null);
@@ -32,8 +39,7 @@ public class TabActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager tabFragmentManager =
-                getSupportFragmentManager().getFragments().get(0).getFragmentManager();
+        FragmentManager tabFragmentManager = getSupportFragmentManager();
         if (tabFragmentManager.getBackStackEntryCount() > 0)
             tabFragmentManager.popBackStack();
         else
