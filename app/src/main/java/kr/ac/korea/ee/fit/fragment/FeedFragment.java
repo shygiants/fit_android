@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -35,13 +36,31 @@ import kr.ac.korea.ee.fit.request.Feed;
  */
 public class FeedFragment extends android.support.v4.app.Fragment {
 
+    public static final String CONTEXT = "CONTEXT";
+
+    public static final String TAB = "TAB";
+    public static final String SEARCH = "SEARCH";
+
     FashionCardAdapter fashionCardAdapter;
+
+    FragmentManager fragmentManager;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         fashionCardAdapter = new FashionCardAdapter();
 
+        Bundle arguments = getArguments();
+        String context = arguments.getString(CONTEXT);
+
+        switch (context) {
+            case TAB:
+                fragmentManager = getFragmentManager();
+                break;
+            case SEARCH:
+                fragmentManager = getParentFragment().getFragmentManager();
+                break;
+        }
     }
 
     @Override
@@ -69,11 +88,10 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         arg.putParcelable(DetailFragment.IMAGE, fashionCard.getImage());
         detailFragment.setArguments(arg);
 
-        getFragmentManager()
-            .beginTransaction()
-            .replace(android.R.id.tabcontent, detailFragment)
-            .addToBackStack(null)
-            .commit();
+        fragmentManager.beginTransaction()
+                    .replace(R.id.tabContainer, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
     }
 
     private class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {

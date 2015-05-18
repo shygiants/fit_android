@@ -28,6 +28,10 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         resultFragment = new FeedFragment();
+        Bundle arg = new Bundle();
+        arg.putString(FeedFragment.CONTEXT, FeedFragment.SEARCH);
+        resultFragment.setArguments(arg);
+
         filterAdapter = new FilterAdapter();
     }
 
@@ -49,8 +53,7 @@ public class SearchFragment extends Fragment {
                     .commit();
             firstTime = false;
         }
-
-
+        
         return view;
     }
 
@@ -86,7 +89,7 @@ public class SearchFragment extends Fragment {
 
                 getFragmentManager()
                         .beginTransaction()
-                        .replace(android.R.id.tabcontent, classPickerFragment)
+                        .replace(R.id.tabContainer, classPickerFragment)
                         .addToBackStack(null)
                         .commit();
 

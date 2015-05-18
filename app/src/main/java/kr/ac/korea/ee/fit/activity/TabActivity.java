@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.fragment.FeedFragment;
 import kr.ac.korea.ee.fit.fragment.SearchFragment;
+import kr.ac.korea.ee.fit.fragment.TabFragment;
 
 /**
  * Created by SHY_mini on 15. 5. 8..
@@ -19,8 +20,6 @@ import kr.ac.korea.ee.fit.fragment.SearchFragment;
 public class TabActivity extends FragmentActivity {
     
     FragmentTabHost tabHost;
-
-    ArrayList<Fragment> fragments;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,14 +31,20 @@ public class TabActivity extends FragmentActivity {
 //        tabHost.getTabWidget().setStripEnabled(false);
         tabHost.getTabWidget().setBackgroundColor(0xFFE0E0E0);
 
+        Bundle arg_feed = new Bundle();
+        arg_feed.putString(TabFragment.TAB_CONTENT, TabFragment.FEED);
+        Bundle arg_search = new Bundle();
+        arg_search.putString(TabFragment.TAB_CONTENT, TabFragment.SEARCH);
+
         // TODO: fill tab content with icon or something
-        tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("Feed"), FeedFragment.class, null);
-        tabHost.addTab(tabHost.newTabSpec("search").setIndicator("Search"), SearchFragment.class, null);
+        tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("Feed"), TabFragment.class, arg_feed);
+        tabHost.addTab(tabHost.newTabSpec("search").setIndicator("Search"), TabFragment.class, arg_search);
     }
 
     @Override
     public void onBackPressed() {
-        FragmentManager tabFragmentManager = getSupportFragmentManager();
+        FragmentManager tabFragmentManager =
+                getSupportFragmentManager().getFragments().get(tabHost.getCurrentTab()).getChildFragmentManager();
         if (tabFragmentManager.getBackStackEntryCount() > 0)
             tabFragmentManager.popBackStack();
         else
