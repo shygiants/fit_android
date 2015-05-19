@@ -7,11 +7,11 @@ public class Schema extends GetData {
 
     String url;
 
-    public static Schema classDataGetter() {
-        Schema classDataGetter = new Schema();
-        classDataGetter.url = "http://" + classDataGetter.ipAddress + "/feed/getClass";
+    public static Schema schemaDataGetter() {
+        Schema getter = new Schema();
+        getter.url = "http://" + getter.ipAddress + "/feed/getSchemaData";
 
-        return classDataGetter;
+        return getter;
     }
 
     @Override

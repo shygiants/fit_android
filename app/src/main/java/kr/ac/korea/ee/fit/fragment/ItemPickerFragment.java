@@ -2,6 +2,7 @@ package kr.ac.korea.ee.fit.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
@@ -10,20 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
-import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.SchemaData;
-import kr.ac.korea.ee.fit.request.Schema;
 
 /**
  * Created by SHYBook_Air on 15. 5. 17..
  */
-public class ClassPickerFragment extends Fragment {
+public class ItemPickerFragment extends Fragment {
 
     ClassAdapter classAdapter;
 
@@ -36,14 +32,20 @@ public class ClassPickerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_classpicker, container, false);
+        View view = inflater.inflate(R.layout.fragment_itempicker, container, false);
 
-        RecyclerView itemList = (RecyclerView)view.findViewById(R.id.classList);
+        RecyclerView classList = (RecyclerView)view.findViewById(R.id.classList);
+        view.findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        classList.setLayoutManager(linearLayoutManager);
 
-        itemList.setLayoutManager(linearLayoutManager);
-
-        itemList.setAdapter(classAdapter);
+        classList.setAdapter(classAdapter);
 
         return view;
     }
@@ -61,14 +63,14 @@ public class ClassPickerFragment extends Fragment {
 
                 itemList = (RecyclerView)view.findViewById(R.id.itemList);
                 classLabel = (TextView)view.findViewById(R.id.classLabel);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-                itemList.setLayoutManager(linearLayoutManager);
-                itemList.setAdapter(new ItemAdapter(null));
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2, LinearLayoutManager.HORIZONTAL, false);
+                itemList.setLayoutManager(gridLayoutManager);
             }
 
             public void setView(Pair<Integer, String> classData) {
                 id = classData.first;
                 classLabel.setText(classData.second);
+                itemList.setAdapter(new ItemAdapter(id));
             }
         }
 
@@ -98,36 +100,57 @@ public class ClassPickerFragment extends Fragment {
         }
     }
 
+
     private class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemHolder> {
 
-        public class ItemHolder extends RecyclerView.ViewHolder {
+        public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+            int id;
             TextView itemText;
 
             public ItemHolder(View view) {
                 super(view);
                 itemText = (TextView)view.findViewById(R.id.itemText);
+                view.setOnClickListener(this);
             }
 
-            public void setView(String item) {
-                itemText.setText(item);
+            public void setView(Pair<Integer, String> itemType) {
+                id = itemType.first;
+                itemText.setText(itemType.second);
+            }
+
+            @Override
+            public void onClick(View view) {
+                DetailPickerFragment detailPickerFragment = new DetailPickerFragment();
+                Bundle args = new Bundle();
+                args.putInt(DetailPickerFragment.TYPE_ID, id);
+                args.putString(DetailPickerFragment.TYPE_LABEL, itemText.getText().toString());
+                detailPickerFragment.setArguments(args);
+
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.tabContainer, detailPickerFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
 
-        String _class;
+        int classId;
+        ArrayList<Pair<Integer, String>> itemList;
 
-        public ItemAdapter(String _class) {
-            this._class = _class;
+        public ItemAdapter(int classId) {
+            this.classId = classId;
+            itemList = SchemaData.getItemTypeList(classId);
         }
 
         @Override
         public int getItemCount() {
-            return 7;
+            return itemList.size();
         }
 
         @Override
         public void onBindViewHolder(ItemHolder holder, int position) {
-            holder.setView(String.valueOf(position));
+            holder.setView(itemList.get(position));
         }
 
         @Override

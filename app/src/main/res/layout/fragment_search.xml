@@ -6,10 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
+        android:background="@drawable/background"
         android:id="@+id/filterList"
         android:layout_width="match_parent"
         android:layout_height="68dp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:elevation="8dp"/>
+        android:elevation="@dimen/appbar_elevation"/>
 </LinearLayout>

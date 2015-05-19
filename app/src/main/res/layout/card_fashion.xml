@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="2dp"
+    card_view:cardElevation="@dimen/card_elevation"
     android:layout_margin="6dp">
 
     <LinearLayout

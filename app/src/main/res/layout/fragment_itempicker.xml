@@ -6,13 +6,18 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:elevation="@dimen/appbar_elevation"
+        android:background="@drawable/background"
         android:layout_width="match_parent"
         android:layout_height="56dp">
-        <Button
-            android:text="취소"
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_marginLeft="16dp"
+            android:background="@null"
+            android:src="@mipmap/ic_action_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/classList"

@@ -6,13 +6,13 @@
     android:orientation="vertical"
     android:layout_marginTop="16dp">
     <TextView
-        android:id="@+id/classLabel"
+        android:id="@+id/attributeText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"/>
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemList"
-        android:layout_height="84dp"
+        android:id="@+id/attributeList"
+        android:layout_height="124dp"
         android:layout_width="match_parent"
         android:layout_marginTop="16dp"/>
 </LinearLayout>

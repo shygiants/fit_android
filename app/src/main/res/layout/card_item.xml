@@ -5,11 +5,10 @@
     android:layout_gravity="center"
     android:minWidth="64dp"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="36dp"
     card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="2dp"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
+    card_view:cardElevation="@dimen/card_elevation"
+    android:layout_margin="4dp"
     android:paddingLeft="4dp"
     android:paddingRight="4dp">
 

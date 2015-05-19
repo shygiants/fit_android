@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment {
                     .commit();
             firstTime = false;
         }
-        
+
         return view;
     }
 
@@ -85,11 +85,11 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                ClassPickerFragment classPickerFragment = new ClassPickerFragment();
+                ItemPickerFragment itemPickerFragment = new ItemPickerFragment();
 
                 getFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.tabContainer, classPickerFragment)
+                        .replace(R.id.tabContainer, itemPickerFragment)
                         .addToBackStack(null)
                         .commit();
 
