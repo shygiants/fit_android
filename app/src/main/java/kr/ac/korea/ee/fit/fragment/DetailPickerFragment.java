@@ -2,6 +2,7 @@ package kr.ac.korea.ee.fit.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,9 @@ public class DetailPickerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        colorFilters = new ArrayList<>();
+        patternFilters = new ArrayList<>();
 
         Bundle args = getArguments();
         id = args.getInt(TYPE_ID);
@@ -128,29 +132,75 @@ public class DetailPickerFragment extends Fragment {
             public void setView(Pair<Integer, String> attribute) {
                 id = attribute.first;
                 attributeLabel.setText(attribute.second);
+                cards.add((CardView)itemView);
+            }
+
+            public CardView setAsAll() {
+                id = -1;
+                attributeLabel.setText("전체");
+                CardView allCard = (CardView)itemView;
+                allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+
+                return allCard;
             }
 
             @Override
             public void onClick(View view) {
+                ArrayList<Integer> filters = (viewType == 0)? colorFilters : patternFilters;
+
+                if (id == -1) {
+                    if (!filters.isEmpty()) {
+                        filters.clear();
+                        for (CardView card : cards)
+                            card.setCardBackgroundColor(0xFFFAFAFA);
+                        allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+                    }
+                    return;
+                }
+
+                if (filters.contains(id)) {
+                    filters.remove(new Integer(id));
+                    ((CardView)view).setCardBackgroundColor(0xFFFAFAFA);
+                    if (filters.isEmpty())
+                        allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+                }
+                else {
+                    filters.add(id);
+                    ((CardView)view).setCardBackgroundColor(getResources().getColor(R.color.accent));
+                    allCard.setCardBackgroundColor(0xFFFAFAFA);
+                }
+
+
                 // TODO: add filter or remove filter
                 // TODO: changer view
             }
         }
 
+        CardView allCard;
+        ArrayList<CardView> cards;
+
         ArrayList<Pair<Integer, String>> attributeList;
+        int viewType;
 
         public AttributeAdapter(int viewType) {
+            this.viewType = viewType;
             attributeList = (viewType == 0)? SchemaData.getColorList() : SchemaData.getPatternList();
+            cards = new ArrayList<>();
         }
 
         @Override
         public int getItemCount() {
-            return attributeList.size();
+            return attributeList.size() + 1;
         }
 
         @Override
         public void onBindViewHolder(AttributeHolder holder, int position) {
-            holder.setView(attributeList.get(position));
+            if (position == 0) {
+                allCard = holder.setAsAll();
+                return;
+            }
+
+            holder.setView(attributeList.get(position - 1));
         }
 
         @Override
