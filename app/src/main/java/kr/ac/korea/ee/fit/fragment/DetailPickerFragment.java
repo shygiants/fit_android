@@ -15,6 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.model.Filter;
 import kr.ac.korea.ee.fit.model.SchemaData;
 import kr.ac.korea.ee.fit.request.Schema;
 
@@ -25,6 +26,8 @@ public class DetailPickerFragment extends Fragment {
 
     public static final String TYPE_ID = "TYPE ID";
     public static final String TYPE_LABEL = "TYPE LABEL";
+    public static final String MODIFYING = "MODIFYING";
+    public static final String POSITION = "POSITION";
 
     int id;
     String typeLabel;
@@ -34,16 +37,25 @@ public class DetailPickerFragment extends Fragment {
     ArrayList<Integer> colorFilters;
     ArrayList<Integer> patternFilters;
 
+    boolean modifying;
+    int position;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        colorFilters = new ArrayList<>();
-        patternFilters = new ArrayList<>();
-
         Bundle args = getArguments();
         id = args.getInt(TYPE_ID);
         typeLabel = args.getString(TYPE_LABEL);
+        if (modifying = args.getBoolean(MODIFYING)) {
+            colorFilters = args.getIntegerArrayList(Filter.COLORS);
+            patternFilters = args.getIntegerArrayList(Filter.PATTERNS);
+            position = args.getInt(POSITION);
+        }
+        else {
+            colorFilters = new ArrayList<>();
+            patternFilters = new ArrayList<>();
+        }
 
         attributeListAdapter = new AttributeListAdapter();
     }
@@ -61,6 +73,24 @@ public class DetailPickerFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+        view.findViewById(R.id.addButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Filter filter = new Filter(id, typeLabel, colorFilters, patternFilters);
+                SearchFragment searchFragment = (SearchFragment)getFragmentManager().getFragment(getArguments(), SearchFragment.KEY);
+
+                if (modifying) {
+                    searchFragment.modifyFilter(position, filter);
+                    getFragmentManager().popBackStack();
+                }
+                else {
+                    searchFragment.addFilter(filter);
+
+                    getFragmentManager().popBackStack();
+                    getFragmentManager().popBackStack();
+                }
+            }
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         attributeList.setLayoutManager(linearLayoutManager);
@@ -68,10 +98,6 @@ public class DetailPickerFragment extends Fragment {
         attributeList.setAdapter(attributeListAdapter);
 
         return view;
-    }
-
-    void Commit() {
-
     }
 
     private class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdapter.AttributeListHolder> {
@@ -132,14 +158,30 @@ public class DetailPickerFragment extends Fragment {
             public void setView(Pair<Integer, String> attribute) {
                 id = attribute.first;
                 attributeLabel.setText(attribute.second);
-                cards.add((CardView)itemView);
+
+
+                CardView cardView = (CardView)itemView;
+                if (modifying) {
+                    ArrayList<Integer> filters = (viewType == 0)? colorFilters : patternFilters;
+
+                    if (filters.contains(id))
+                        cardView.setCardBackgroundColor(getResources().getColor(R.color.accent));
+                }
+                cards.add(cardView);
             }
 
             public CardView setAsAll() {
                 id = -1;
                 attributeLabel.setText("전체");
                 CardView allCard = (CardView)itemView;
-                allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+
+                if (!modifying)
+                    allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+                else {
+                    ArrayList<Integer> filters = (viewType == 0)? colorFilters : patternFilters;
+                    if (filters.isEmpty())
+                        allCard.setCardBackgroundColor(getResources().getColor(R.color.accent));
+                }
 
                 return allCard;
             }
@@ -169,10 +211,6 @@ public class DetailPickerFragment extends Fragment {
                     ((CardView)view).setCardBackgroundColor(getResources().getColor(R.color.accent));
                     allCard.setCardBackgroundColor(0xFFFAFAFA);
                 }
-
-
-                // TODO: add filter or remove filter
-                // TODO: changer view
             }
         }
 

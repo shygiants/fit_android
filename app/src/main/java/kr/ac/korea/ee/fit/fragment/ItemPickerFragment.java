@@ -122,9 +122,11 @@ public class ItemPickerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 DetailPickerFragment detailPickerFragment = new DetailPickerFragment();
-                Bundle args = new Bundle();
+                Bundle args = getArguments();
                 args.putInt(DetailPickerFragment.TYPE_ID, id);
                 args.putString(DetailPickerFragment.TYPE_LABEL, itemText.getText().toString());
+                args.putBoolean(DetailPickerFragment.MODIFYING, false);
+
                 detailPickerFragment.setArguments(args);
 
                 getFragmentManager()

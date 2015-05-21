@@ -12,11 +12,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.model.Filter;
 
 /**
  * Created by SHY_mini on 15. 5. 16..
  */
 public class SearchFragment extends Fragment {
+
+    public static final String KEY = "SEARCH";
 
     FeedFragment resultFragment;
     FilterAdapter filterAdapter;
@@ -57,20 +60,60 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
+    public void addFilter(Filter filter) {
+        filterAdapter.addFilter(filter);
+    }
+
+    public void modifyFilter(int position, Filter filter) {
+        filterAdapter.modifyFilter(position, filter);
+    }
+
+
+    public Fragment getFragment() {
+        return this;
+    }
+
     private class FilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        public class FilterViewHolder extends RecyclerView.ViewHolder {
+        public class FilterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             TextView filterText;
 
+            Filter filter;
+            int position;
+
             public FilterViewHolder(View view) {
                 super(view);
+                view.setOnClickListener(this);
 
                 filterText = (TextView)view.findViewById(R.id.filterText);
             }
 
-            public void setView(String filter) {
-                filterText.setText(filter);
+            public void setView(int position) {
+                this.position = position;
+                filter = filters.get(position);
+                filterText.setText(filter.getTypeLabel());
+            }
+
+            @Override
+            public void onClick(View view) {
+                DetailPickerFragment detailPickerFragment = new DetailPickerFragment();
+                Bundle args = new Bundle();
+                args.putInt(DetailPickerFragment.TYPE_ID, filter.getTypeId());
+                args.putString(DetailPickerFragment.TYPE_LABEL, filter.getTypeLabel());
+                args.putBoolean(DetailPickerFragment.MODIFYING, true);
+                args.putIntegerArrayList(Filter.COLORS, filter.getColors());
+                args.putIntegerArrayList(Filter.PATTERNS, filter.getPatterns());
+                args.putInt(DetailPickerFragment.POSITION, position);
+
+                getFragmentManager().putFragment(args, KEY, getFragment());
+                detailPickerFragment.setArguments(args);
+
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.tabContainer, detailPickerFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
 
@@ -86,37 +129,44 @@ public class SearchFragment extends Fragment {
             public void onClick(View v) {
 
                 ItemPickerFragment itemPickerFragment = new ItemPickerFragment();
+                Bundle arg = new Bundle();
+                getFragmentManager().putFragment(arg, KEY, getFragment());
+                itemPickerFragment.setArguments(arg);
 
                 getFragmentManager()
                         .beginTransaction()
                         .replace(R.id.tabContainer, itemPickerFragment)
                         .addToBackStack(null)
                         .commit();
-
-//                getChildFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.container, null) // TODO: replace null with filter fragment
-//                        .addToBackStack(null)
-//                        .commit();
             }
         }
 
-        ArrayList<String> filters;
+        ArrayList<Filter> filters;
 
         public FilterAdapter() {
             filters = new ArrayList<>();
+        }
 
+        public void addFilter(Filter filter) {
+            filters.add(filter);
+            notifyDataSetChanged();
+        }
+
+        public void modifyFilter(int position, Filter filter) {
+            filters.remove(position);
+            filters.add(position, filter);
+            notifyDataSetChanged();
         }
 
         @Override
         public int getItemCount() {
-            return 3;
+            return filters.size() + 1;
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position + 1 != getItemCount())
-                ((FilterViewHolder)holder).setView(String.valueOf(position));
+                ((FilterViewHolder)holder).setView(position);
         }
 
         @Override
