@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 
 import java.util.ArrayList;
 
@@ -28,8 +29,10 @@ public class TabActivity extends FragmentActivity {
         
         tabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         tabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
-//        tabHost.getTabWidget().setStripEnabled(false);
-        tabHost.getTabWidget().setBackgroundColor(0xFFE0E0E0);
+
+        TabWidget tabWidget = tabHost.getTabWidget();
+        tabWidget.setBackgroundColor(0xFFE0E0E0);
+        tabWidget.setDividerDrawable(null);
 
         Bundle arg_feed = new Bundle();
         arg_feed.putString(TabFragment.TAB_CONTENT, TabFragment.FEED);
@@ -37,8 +40,8 @@ public class TabActivity extends FragmentActivity {
         arg_search.putString(TabFragment.TAB_CONTENT, TabFragment.SEARCH);
 
         // TODO: fill tab content with icon or something
-        tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("Feed"), TabFragment.class, arg_feed);
-        tabHost.addTab(tabHost.newTabSpec("search").setIndicator("Search"), TabFragment.class, arg_search);
+        tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("", getDrawable(R.drawable.tab_feed)), TabFragment.class, arg_feed);
+        tabHost.addTab(tabHost.newTabSpec("search").setIndicator("", getDrawable(R.drawable.tab_search)), TabFragment.class, arg_search);
     }
 
     @Override

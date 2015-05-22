@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -101,12 +102,12 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     private class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {
 
         public class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            static final int RATED_COLOR = 0xFFEF5350;
-            static final int NOT_RATED_COLOR = 0xFF42A5F5;
+            static final float RATED = (float)1.0;
+            static final float NOT_RATED = (float)0.26;
 
             ImageView fashionImg;
             TextView editorName;
-            Button[] button;
+            ImageButton[] button;
             View cardView;
             int fashionId;
 
@@ -115,10 +116,10 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 cardView = view;
                 fashionImg = (ImageView)view.findViewById(R.id.fashionImg);
                 editorName = (TextView)view.findViewById(R.id.editorName);
-                button = new Button[3];
-                button[0] = (Button)view.findViewById(R.id.button1);
-                button[1] = (Button)view.findViewById(R.id.button2);
-                button[2] = (Button)view.findViewById(R.id.button3);
+                button = new ImageButton[3];
+                button[0] = (ImageButton)view.findViewById(R.id.button1);
+                button[1] = (ImageButton)view.findViewById(R.id.button2);
+                button[2] = (ImageButton)view.findViewById(R.id.button3);
             }
 
             public void setView(final FashionCard fashionCard, String[] ratingTypes) {
@@ -136,8 +137,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 int ratingType = fashionCard.getRatingType();
 
                 for (int i = 0; i < 3; i++) {
-                    button[i].setText(ratingTypes[i]);
-                    button[i].setTextColor((i + 1 == ratingType)? RATED_COLOR : NOT_RATED_COLOR);
+//                    button[i].setText(ratingTypes[i]);
+                    button[i].setAlpha((i + 1 == ratingType)? RATED : NOT_RATED);
                     button[i].setOnClickListener(this);
                 }
                 editorName.setText(fashionCard.getEditorName() + "님이 작성");
@@ -162,15 +163,15 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 }
 
                 Event ratingEvent = new Event(User.get().getEmail(), fashionId, ratingType);
-                RateTask rate = new RateTask((Button)view);
+                RateTask rate = new RateTask((ImageButton)view);
                 rate.start(ratingEvent);
             }
 
             class RateTask extends HTTPClient<Event> {
 
-                Button buttonClicked;
+                ImageButton buttonClicked;
 
-                public RateTask(Button buttonClicked) {
+                public RateTask(ImageButton buttonClicked) {
                     this.buttonClicked = buttonClicked;
                 }
                 @Override
@@ -179,8 +180,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                         String success = response.getString("success");
                         if (success.equals("true")) {
                             for (int i = 0; i < 3; i++)
-                                button[i].setTextColor(NOT_RATED_COLOR);
-                            buttonClicked.setTextColor(RATED_COLOR);
+                                button[i].setAlpha(NOT_RATED);
+                            buttonClicked.setAlpha(RATED);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
