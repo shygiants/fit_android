@@ -4,15 +4,20 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.Filter;
+import kr.ac.korea.ee.fit.request.Feed;
 
 /**
  * Created by SHY_mini on 15. 5. 16..
@@ -62,12 +67,23 @@ public class SearchFragment extends Fragment {
 
     public void addFilter(Filter filter) {
         filterAdapter.addFilter(filter);
+        getResult();
     }
 
     public void modifyFilter(int position, Filter filter) {
         filterAdapter.modifyFilter(position, filter);
+        getResult();
     }
 
+    public void removeFilter(int position) {
+        filterAdapter.removeFilter(position);
+        getResult();
+    }
+
+    void getResult() {
+        Feed filter = new Feed(filterAdapter.filters);
+        resultFragment.refresh(filter);
+    }
 
     public Fragment getFragment() {
         return this;
@@ -92,7 +108,7 @@ public class SearchFragment extends Fragment {
             public void setView(int position) {
                 this.position = position;
                 filter = filters.get(position);
-                filterText.setText(filter.getTypeLabel());
+                filterText.setText(filter.getTypeLabel() + "...");
             }
 
             @Override
@@ -155,6 +171,11 @@ public class SearchFragment extends Fragment {
         public void modifyFilter(int position, Filter filter) {
             filters.remove(position);
             filters.add(position, filter);
+            notifyDataSetChanged();
+        }
+
+        public void removeFilter(int position) {
+            filters.remove(position);
             notifyDataSetChanged();
         }
 

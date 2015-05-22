@@ -94,6 +94,10 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                     .commit();
     }
 
+    public void refresh(Feed getFiltered) {
+        fashionCardAdapter.refresh(getFiltered);
+    }
+
     private class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {
 
         public class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -194,6 +198,14 @@ public class FeedFragment extends android.support.v4.app.Fragment {
 
             FeedTask feeder = new FeedTask();
             feeder.start(Feed.getFeed());
+        }
+
+        public void refresh(Feed getFiltered) {
+            cards.clear();
+            notifyDataSetChanged();
+
+            FeedTask feeder = new FeedTask();
+            feeder.start(getFiltered);
         }
 
         @Override

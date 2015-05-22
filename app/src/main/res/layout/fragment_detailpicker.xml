@@ -9,8 +9,7 @@
         android:elevation="@dimen/appbar_elevation"
         android:background="@drawable/background"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="bottom">
+        android:layout_height="56dp">
         <ImageButton
             android:id="@+id/backButton"
             android:layout_margin="16dp"
@@ -24,12 +23,11 @@
             android:id="@+id/typeTitle"
             android:textStyle="bold"
             android:layout_marginLeft="72dp"
-            android:layout_marginBottom="20dp"
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_alignParentBottom="true" />
+            android:layout_marginTop="16dp" />
         <ImageButton
             android:id="@+id/addButton"
             android:layout_margin="16dp"
@@ -39,6 +37,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_alignParentEnd="true" />
+        <ImageButton
+            android:layout_toLeftOf="@id/addButton"
+            android:id="@+id/discardButton"
+            android:layout_marginTop="16dp"
+            android:background="@null"
+            android:src="@mipmap/ic_action_discard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
 
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView

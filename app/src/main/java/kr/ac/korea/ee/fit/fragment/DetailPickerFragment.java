@@ -22,7 +22,7 @@ import kr.ac.korea.ee.fit.request.Schema;
 /**
  * Created by SHYBook_Air on 15. 5. 19..
  */
-public class DetailPickerFragment extends Fragment {
+public class DetailPickerFragment extends Fragment implements View.OnClickListener {
 
     public static final String TYPE_ID = "TYPE ID";
     public static final String TYPE_LABEL = "TYPE LABEL";
@@ -67,17 +67,34 @@ public class DetailPickerFragment extends Fragment {
         ((TextView)view.findViewById(R.id.typeTitle)).setText(typeLabel);
 
         RecyclerView attributeList = (RecyclerView)view.findViewById(R.id.attributeList);
-        view.findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        view.findViewById(R.id.backButton).setOnClickListener(this);
+        View discardButton = view.findViewById(R.id.discardButton);
+        discardButton.setVisibility((modifying) ? View.VISIBLE : View.INVISIBLE);
+        discardButton.setOnClickListener(this);
+        view.findViewById(R.id.addButton).setOnClickListener(this);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        attributeList.setLayoutManager(linearLayoutManager);
+
+        attributeList.setAdapter(attributeListAdapter);
+
+        return view;
+    }
+
+    public void onClick(View view) {
+        SearchFragment searchFragment;
+        switch (view.getId()) {
+            case R.id.backButton:
                 getActivity().onBackPressed();
-            }
-        });
-        view.findViewById(R.id.addButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.discardButton:
+                searchFragment = (SearchFragment)getFragmentManager().getFragment(getArguments(), SearchFragment.KEY);
+                searchFragment.removeFilter(position);
+                getFragmentManager().popBackStack();
+                break;
+            case R.id.addButton:
                 Filter filter = new Filter(id, typeLabel, colorFilters, patternFilters);
-                SearchFragment searchFragment = (SearchFragment)getFragmentManager().getFragment(getArguments(), SearchFragment.KEY);
+                searchFragment = (SearchFragment)getFragmentManager().getFragment(getArguments(), SearchFragment.KEY);
 
                 if (modifying) {
                     searchFragment.modifyFilter(position, filter);
@@ -89,15 +106,8 @@ public class DetailPickerFragment extends Fragment {
                     getFragmentManager().popBackStack();
                     getFragmentManager().popBackStack();
                 }
-            }
-        });
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        attributeList.setLayoutManager(linearLayoutManager);
-
-        attributeList.setAdapter(attributeListAdapter);
-
-        return view;
+                break;
+        }
     }
 
     private class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdapter.AttributeListHolder> {
