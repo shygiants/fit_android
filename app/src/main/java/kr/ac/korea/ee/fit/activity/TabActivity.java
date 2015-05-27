@@ -38,10 +38,13 @@ public class TabActivity extends FragmentActivity {
         arg_feed.putString(TabFragment.TAB_CONTENT, TabFragment.FEED);
         Bundle arg_search = new Bundle();
         arg_search.putString(TabFragment.TAB_CONTENT, TabFragment.SEARCH);
+        Bundle arg_user = new Bundle();
+        arg_user.putString(TabFragment.TAB_CONTENT, TabFragment.USER);
 
         // TODO: fill tab content with icon or something
         tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("", getDrawable(R.drawable.tab_feed)), TabFragment.class, arg_feed);
         tabHost.addTab(tabHost.newTabSpec("search").setIndicator("", getDrawable(R.drawable.tab_search)), TabFragment.class, arg_search);
+        tabHost.addTab(tabHost.newTabSpec("user").setIndicator("", getDrawable(R.drawable.tab_user)), TabFragment.class, arg_user);
     }
 
     @Override

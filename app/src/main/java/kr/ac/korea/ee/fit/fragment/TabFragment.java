@@ -17,6 +17,7 @@ public class TabFragment extends Fragment {
 
     public static final String FEED = "FEED";
     public static final String SEARCH = "SEARCH";
+    public static final String USER = "USER";
 
     Fragment contentFragment;
     boolean firstTime = true;
@@ -36,6 +37,9 @@ public class TabFragment extends Fragment {
                 break;
             case SEARCH:
                 contentFragment = new SearchFragment();
+                break;
+            case USER:
+                contentFragment = new UserFragment();
                 break;
         }
     }
