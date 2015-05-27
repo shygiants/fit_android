@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,11 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Comment;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -38,6 +41,8 @@ public class DetailFragment extends Fragment {
 
     View detailView;
 
+    public DetailFragment(){}
+
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
@@ -49,12 +54,29 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ((TextView)view.findViewById(R.id.fashionIdText)).setText(String.valueOf(fashionId));
-
         ((ImageView)view.findViewById(R.id.fashionImg)).setImageBitmap(image);
         detailView = view;
 
+        final CommentFragment commentFragment = new CommentFragment();
+        Button imageInfo = (Button)view.findViewById(R.id.imageInfo);
+        Button comments = (Button)view.findViewById(R.id.comments);
+
+        imageInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,commentFragment).commit();
+            }
+        });
         GetDetailTask getDetail = new GetDetailTask();
         getDetail.start(new Detail(String.valueOf(fashionId)));
+
 
         return view;
     }
@@ -65,7 +87,7 @@ public class DetailFragment extends Fragment {
         arg.putInt(DetailFragment.FASHION_ID, editorId);
         detailFragment.setArguments(arg);
 
-        getFragmentManager()
+        getFragmentManager()//getSupportFragmentManager
             .beginTransaction()
             .replace(android.R.id.tabcontent, detailFragment)
             .addToBackStack(null)
