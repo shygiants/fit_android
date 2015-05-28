@@ -7,7 +7,8 @@
         android:id="@+id/fashionIdText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="id" />
+        android:text="fashionId" />
+
     <TextView
         android:id="@+id/srcLinkText"
         android:layout_width="match_parent"
@@ -43,11 +44,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="created" />
+
     <TextView
         android:id="@+id/rateText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="rate" />
-
-
 </LinearLayout>

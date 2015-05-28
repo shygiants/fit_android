@@ -16,6 +16,7 @@
         android:layout_height="1dp"
         android:layout_centerVertical="true"
         android:layout_alignParentTop="true"/>
+
     <android.support.v4.app.FragmentTabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"

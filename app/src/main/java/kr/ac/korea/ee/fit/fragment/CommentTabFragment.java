@@ -22,7 +22,7 @@ import kr.ac.korea.ee.fit.model.CommentItem;
 /**
  * Created by NuriKim on 15. 5. 28..
  */
-public class CommentFragment extends Fragment {
+public class CommentTabFragment extends Fragment {
 
     public static final String FASHION_ID = "FASHION_ID";
 
@@ -46,7 +46,7 @@ public class CommentFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_comment, container, false);
+        View view = inflater.inflate(R.layout.fragment_comment_tab, container, false);
 
         commentList = (RecyclerView)view.findViewById(R.id.commentList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -88,6 +88,9 @@ public class CommentFragment extends Fragment {
         public CommentListAdapter(String fashion_id) {
             this.fashion_id = fashion_id;
 
+            commentItems.add(new CommentItem());
+            commentItems.add(new CommentItem());
+            commentItems.add(new CommentItem());
             commentItems.add(new CommentItem());
             commentItems.add(new CommentItem());
             commentItems.add(new CommentItem());

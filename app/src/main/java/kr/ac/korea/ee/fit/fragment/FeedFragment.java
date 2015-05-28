@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -270,6 +271,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 JSONObject response = params[0];
 
                 try {
+                    Log.i("json", response.toString());
                     JSONArray cards = response.getJSONArray("cards");
 
                     int arraySize = cards.length();
