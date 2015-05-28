@@ -41,7 +41,6 @@ public class TabActivity extends FragmentActivity {
         Bundle arg_user = new Bundle();
         arg_user.putString(TabFragment.TAB_CONTENT, TabFragment.USER);
 
-        // TODO: fill tab content with icon or something
         tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("", getDrawable(R.drawable.tab_feed)), TabFragment.class, arg_feed);
         tabHost.addTab(tabHost.newTabSpec("search").setIndicator("", getDrawable(R.drawable.tab_search)), TabFragment.class, arg_search);
         tabHost.addTab(tabHost.newTabSpec("user").setIndicator("", getDrawable(R.drawable.tab_user)), TabFragment.class, arg_user);
@@ -49,8 +48,10 @@ public class TabActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager tabFragmentManager =
-                getSupportFragmentManager().getFragments().get(tabHost.getCurrentTab()).getChildFragmentManager();
+//        FragmentManager tabFragmentManager =
+//                getSupportFragmentManager().getFragments().get(tabHost.getCurrentTab()).getChildFragmentManager();
+
+        FragmentManager tabFragmentManager = getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager();
         if (tabFragmentManager.getBackStackEntryCount() > 0)
             tabFragmentManager.popBackStack();
         else

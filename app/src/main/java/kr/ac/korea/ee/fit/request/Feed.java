@@ -31,16 +31,10 @@ public class Feed extends PostData {
         return feed;
     }
 
-    Feed() {
-        super();
-    }
-
-    public Feed (ArrayList<Filter> filters) {
-
-        url = "http://" + ipAddress + "/feed/getFiltered";
-
-        data = new ArrayList<>();
-
+    public static Feed getFiltered(ArrayList<Filter> filters) {
+        Feed feed = new Feed();
+        feed.url = "http://" + feed.ipAddress + "/feed/getFiltered";
+        feed.data = new ArrayList<>();
 
         JSONArray filters_json = new JSONArray();
 
@@ -59,8 +53,28 @@ public class Feed extends PostData {
             Log.e("Feed", filters_json.toString());
         }
 
-        data.add(new BasicNameValuePair("filters", filters_json.toString()));
-        data.add(new BasicNameValuePair("email", User.get().getEmail()));
+        feed.data.add(new BasicNameValuePair("filters", filters_json.toString()));
+        feed.data.add(new BasicNameValuePair("email", User.get().getEmail()));
+
+        return feed;
+    }
+
+    static Feed getRated() {
+        Feed feed = new Feed();
+        feed.url = "http://" + feed.ipAddress + "/feed/getRated";
+        feed.data = new ArrayList<>();
+        feed.data.add(new BasicNameValuePair("email", User.get().getEmail()));
+
+        return feed;
+    }
+
+    public static Feed getCollection(int collection_id) {
+        if (collection_id == 0) {
+            return getRated();
+        }
+
+        // TODO: getting collection
+        return null;
     }
 
     @Override

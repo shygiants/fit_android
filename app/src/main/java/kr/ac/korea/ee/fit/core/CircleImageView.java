@@ -20,7 +20,6 @@ public class CircleImageView extends ImageView {
 
     public CircleImageView(Context context) {
         super(context);
-        // TODO Auto-generated constructor stub
     }
 
     public CircleImageView(Context context, AttributeSet attrs) {

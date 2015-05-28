@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import kr.ac.korea.ee.fit.R;
@@ -63,16 +64,41 @@ public class UserFragment extends Fragment {
 
     private class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.CollectionHolder> {
 
-        public class CollectionHolder extends RecyclerView.ViewHolder {
+        public class CollectionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+            ImageView thumbnail;
+            TextView collectionTitle;
 
             public CollectionHolder(View view) {
                 super(view);
+
+                thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
+                collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
+
+                view.setOnClickListener(this);
+            }
+
+            public void setView() {
+
+            }
+
+            @Override
+            public void onClick(View v) {
+                CollectionFragment collectionFragment = new CollectionFragment();
+                Bundle arg = new Bundle();
+                arg.putInt(CollectionFragment.COLLECTION_ID, 0);
+                collectionFragment.setArguments(arg);
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, collectionFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 1;
         }
 
         @Override

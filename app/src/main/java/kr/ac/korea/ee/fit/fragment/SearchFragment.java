@@ -81,8 +81,7 @@ public class SearchFragment extends Fragment {
     }
 
     void getResult() {
-        Feed filter = new Feed(filterAdapter.filters);
-        resultFragment.refresh(filter);
+        resultFragment.refresh(Feed.getFiltered(filterAdapter.filters));
     }
 
     public Fragment getFragment() {

@@ -41,24 +41,30 @@ public class FeedFragment extends android.support.v4.app.Fragment {
 
     public static final String TAB = "TAB";
     public static final String SEARCH = "SEARCH";
+    public static final String COLLECTION = "COLLECTION";
 
     FashionCardAdapter fashionCardAdapter;
 
     FragmentManager fragmentManager;
+    String context;
+    int collection_id;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        fashionCardAdapter = new FashionCardAdapter();
 
         Bundle arguments = getArguments();
-        String context = arguments.getString(CONTEXT);
+        context = arguments.getString(CONTEXT);
+        collection_id = arguments.getInt(CollectionFragment.COLLECTION_ID);
+
+        fashionCardAdapter = new FashionCardAdapter();
 
         switch (context) {
             case TAB:
                 fragmentManager = getFragmentManager();
                 break;
             case SEARCH:
+            case COLLECTION:
                 fragmentManager = getParentFragment().getFragmentManager();
                 break;
         }
@@ -197,8 +203,10 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         public FashionCardAdapter() {
             cards = new ArrayList<>();
 
+            Feed feed = (context.equals(COLLECTION))? Feed.getCollection(collection_id) : Feed.getFeed();
+
             FeedTask feeder = new FeedTask();
-            feeder.start(Feed.getFeed());
+            feeder.start(feed);
         }
 
         public void refresh(Feed getFiltered) {
