@@ -6,39 +6,48 @@
     <TextView
         android:id="@+id/fashionIdText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="fashionId" />
     <TextView
         android:id="@+id/srcLinkText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="link" />
     <TextView
         android:id="@+id/genderText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="gender" />
     <TextView
         android:id="@+id/editorNameText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="editor" />
     <TextView
         android:id="@+id/seasonText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="season" />
     <TextView
         android:id="@+id/styleText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="style" />
     <TextView
         android:id="@+id/ageText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="age" />
     <TextView
         android:id="@+id/createdText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="date" />
     <TextView
         android:id="@+id/rateText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="rate" />
 
 
 

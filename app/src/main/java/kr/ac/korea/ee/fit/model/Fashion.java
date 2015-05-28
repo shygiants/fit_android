@@ -35,10 +35,4 @@ public class Fashion {
             e.printStackTrace();
         }
     }
-
-    public View setView(View view) {
-        ((TextView)view.findViewById(R.id.srcLinkText)).setText(srcLink);
-
-        return view;
-    }
 }

@@ -7,7 +7,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/detailContainer">
 
         <ImageView
             android:id="@+id/fashionImg"
@@ -15,90 +16,42 @@
             android:layout_height="fill_parent"
             android:adjustViewBounds="true"/>
 
-        <TextView
-            android:id="@+id/fashionIdText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/srcLinkText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/genderText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
         <LinearLayout
-            android:orientation="horizontal"
+            android:padding="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:weightSum="1">
-            <TextView
-                android:text="More Info..."
-                android:textAlignment="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/imageInfo"
-                android:text=">"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <!-- information of the image -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:weightSum="1">
-            <EditText
-                android:id="@+id/writeComment"
-                android:hint="댓글 쓰기..."
-                android:textSize="18dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-            <Button
-                android:id="@+id/upComment"
-                android:textSize="18dp"
-                android:text="올리기"
-                android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:alpha="0.26"
+                android:src="@mipmap/ic_action_bad"
+                android:background="@null"
+                android:id="@+id/button1"
+                android:layout_weight="4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <ImageButton
+                android:alpha="0.26"
+                android:src="@mipmap/ic_action_good"
+                android:background="@null"
+                android:id="@+id/button2"
+                android:layout_weight="4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <ImageButton
+                android:alpha="0.26"
+                android:src="@mipmap/ic_action_favorite"
+                android:background="@null"
+                android:id="@+id/button3"
+                android:layout_weight="4"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
+
+        <TextView
+            android:text="More Info..."
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:weightSum="1">
-            <TextView
-                android:text="More Comments..."
-                android:textAlignment="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/comments"
-                android:text=">"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/comment3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/comment2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/comment1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textSize="16sp" />
 
         <!-- comments -->
     </LinearLayout>
