@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewGroup"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/detailContainer">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/detailContainer">
+        android:id="@+id/detailStart">
 
         <ImageView
             android:id="@+id/fashionImg"
@@ -24,7 +29,7 @@
                 android:alpha="0.26"
                 android:src="@mipmap/ic_action_bad"
                 android:background="@null"
-                android:id="@+id/button1"
+                android:id="@+id/button01"
                 android:layout_weight="4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
@@ -32,7 +37,7 @@
                 android:alpha="0.26"
                 android:src="@mipmap/ic_action_good"
                 android:background="@null"
-                android:id="@+id/button2"
+                android:id="@+id/button02"
                 android:layout_weight="4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
@@ -40,20 +45,30 @@
                 android:alpha="0.26"
                 android:src="@mipmap/ic_action_favorite"
                 android:background="@null"
-                android:id="@+id/button3"
+                android:id="@+id/button03"
                 android:layout_weight="4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!--<TextView-->
+            <!--android:id="@+id/moreInfo"-->
+            <!--android:text="More Info..."-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="16sp" />-->
         <TextView
-            android:text="More Info..."
+            android:id="@+id/moreComment"
+            android:clickable="true"
+            android:text="More Comments..."
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
-        <!-- comments -->
     </LinearLayout>
+    </FrameLayout>
+
 
 </ScrollView>
