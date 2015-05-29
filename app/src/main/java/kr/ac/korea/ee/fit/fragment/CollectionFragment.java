@@ -44,7 +44,7 @@ public class CollectionFragment extends Fragment {
 
         collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
         if (collection_id == 0)
-            collectionTitle.setText("평가한 것들");
+            collectionTitle.setText("좋아하는 패션");
         view.findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

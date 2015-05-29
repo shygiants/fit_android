@@ -19,20 +19,32 @@ public class Fashion {
     String style;
     String age;
     String createDate;
-    String rate;
+    int rate;
 
     public Fashion(JSONObject fashion) {
         try {
             srcLink = fashion.getString("src_link");
             gender = fashion.getString("gender_label");
-            editorName = fashion.getString("first_name") + fashion.getString("last_name");
+            editorName = fashion.getString("last_name") + fashion.getString("first_name");
             season = fashion.getString("season_label");
             style = fashion.getString("style_label");
             age = fashion.getString("age_label");
             createDate = fashion.getString("created_date");
-            rate = fashion.getString("type_id");
+            rate = fashion.getInt("type_id");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getEditorName() {
+        return editorName;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public String getSrcLink() {
+        return srcLink;
     }
 }

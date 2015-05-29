@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -54,7 +55,10 @@ public class UserFragment extends Fragment {
         followingText.setText(String.valueOf(user.getFollowing()));
 
         RecyclerView collectionList = (RecyclerView)view.findViewById(R.id.collectionList);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3, LinearLayoutManager.VERTICAL, false);
+        Configuration config = getResources().getConfiguration();
+        boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
+                Configuration.SCREENLAYOUT_SIZE_LARGE;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), (isLarge)? 3 : 2, LinearLayoutManager.VERTICAL, false);
 
         collectionList.setLayoutManager(gridLayoutManager);
         collectionList.setAdapter(collectionAdapter);
@@ -74,6 +78,8 @@ public class UserFragment extends Fragment {
 
                 thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
                 collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
+
+                collectionTitle.setText("좋아하는 패션");
 
                 view.setOnClickListener(this);
             }

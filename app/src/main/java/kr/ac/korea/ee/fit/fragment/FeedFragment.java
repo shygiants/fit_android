@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,7 +28,6 @@ import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.FashionCard;
 import kr.ac.korea.ee.fit.model.User;
-import kr.ac.korea.ee.fit.request.Detail;
 import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.Feed;
 
@@ -43,6 +41,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     public static final String TAB = "TAB";
     public static final String SEARCH = "SEARCH";
     public static final String COLLECTION = "COLLECTION";
+    public static final String DETAIL = "DETAIL";
 
     FashionCardAdapter fashionCardAdapter;
 
@@ -66,6 +65,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 break;
             case SEARCH:
             case COLLECTION:
+            case DETAIL:
                 fragmentManager = getParentFragment().getFragmentManager();
                 break;
         }

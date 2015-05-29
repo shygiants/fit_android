@@ -40,7 +40,7 @@ public class CommentFragment extends Fragment {
 
         fashion_id = args.getInt(FASHION_ID);
 
-        adapter = new CommentListAdapter(null);
+        adapter = new CommentListAdapter(fashion_id);
     }
 
 
@@ -82,10 +82,10 @@ public class CommentFragment extends Fragment {
             }
         }
 
-        String fashion_id;
-        List<CommentItem> commentItems = new ArrayList<>();
+        int fashion_id;
+        ArrayList<CommentItem> commentItems = new ArrayList<>();
 
-        public CommentListAdapter(String fashion_id) {
+        public CommentListAdapter(int fashion_id) {
             this.fashion_id = fashion_id;
 
             commentItems.add(new CommentItem());
