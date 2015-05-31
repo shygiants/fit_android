@@ -57,18 +57,18 @@ public class Feed extends PostData {
         return feed;
     }
 
-    static Feed getRated() {
+    static Feed getRated(String user_id) {
         Feed feed = new Feed();
         feed.url = "http://" + ipAddress + "/feed/getRated";
 
-        feed.add("email", User.getDeviceUserId());
+        feed.add("email", user_id);
 
         return feed;
     }
 
-    public static Feed getCollection(int collection_id) {
+    public static Feed getCollection(int collection_id, String user_id) {
         if (collection_id == 0) {
-            return getRated();
+            return getRated(user_id);
         }
 
         // TODO: getting collection

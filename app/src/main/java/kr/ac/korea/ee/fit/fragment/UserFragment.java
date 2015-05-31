@@ -12,13 +12,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.User;
+import kr.ac.korea.ee.fit.request.GetUserData;
 
 /**
  * Created by SHYBook_Air on 15. 5. 28..
  */
 public class UserFragment extends Fragment {
+
+    public static final String USER_ID = "USER ID";
+
+    User user;
+    boolean isDeviceUser;
 
     TextView nickNameText;
     TextView nameText;
@@ -27,16 +36,24 @@ public class UserFragment extends Fragment {
     TextView followerText;
     TextView followingText;
 
-    User user;
-
+    RecyclerView collectionList;
     CollectionAdapter collectionAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: consider context (device user or any other users)
-        user = User.getDeviceUser();
-        collectionAdapter = new CollectionAdapter();
+
+        Bundle arg = getArguments();
+        String userId = arg.getString(USER_ID);
+
+        if (isDeviceUser = User.isDeviceUser(userId)) {
+            user = User.getDeviceUser();
+            collectionAdapter = new CollectionAdapter();
+        }
+        else {
+            UserGetterTask getter = new UserGetterTask();
+            getter.start(new GetUserData(userId));
+        }
     }
 
     @Override
@@ -44,25 +61,27 @@ public class UserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         nickNameText = (TextView)view.findViewById(R.id.nickName);
-        nickNameText.setText(user.getNickName());
         nameText = (TextView)view.findViewById(R.id.name);
-        nameText.setText(user.getName());
-
         ratingText = (TextView)view.findViewById(R.id.rating);
-        ratingText.setText(String.valueOf(user.getRating()));
         followerText = (TextView)view.findViewById(R.id.follower);
-        followerText.setText(String.valueOf(user.getFollower()));
         followingText = (TextView)view.findViewById(R.id.following);
-        followingText.setText(String.valueOf(user.getFollowing()));
 
-        RecyclerView collectionList = (RecyclerView)view.findViewById(R.id.collectionList);
+        collectionList = (RecyclerView)view.findViewById(R.id.collectionList);
         Configuration config = getResources().getConfiguration();
         boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
                 Configuration.SCREENLAYOUT_SIZE_LARGE;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), (isLarge)? 3 : 2, LinearLayoutManager.VERTICAL, false);
 
         collectionList.setLayoutManager(gridLayoutManager);
-        collectionList.setAdapter(collectionAdapter);
+
+        if (isDeviceUser || user != null) {
+            nickNameText.setText(user.getNickName());
+            nameText.setText(user.getName());
+            ratingText.setText(String.valueOf(user.getRating()));
+            followerText.setText(String.valueOf(user.getFollower()));
+            followingText.setText(String.valueOf(user.getFollowing()));
+            collectionList.setAdapter(collectionAdapter);
+        }
 
         return view;
     }
@@ -94,6 +113,7 @@ public class UserFragment extends Fragment {
                 CollectionFragment collectionFragment = new CollectionFragment();
                 Bundle arg = new Bundle();
                 arg.putInt(CollectionFragment.COLLECTION_ID, 0);
+                arg.putString(CollectionFragment.USER_ID, user.getEmail());
                 collectionFragment.setArguments(arg);
 
                 getFragmentManager().beginTransaction()
@@ -119,6 +139,20 @@ public class UserFragment extends Fragment {
                     .inflate(R.layout.card_collection, parent, false);
 
             return new CollectionHolder(view);
+        }
+    }
+
+    private class UserGetterTask extends HTTPClient<GetUserData> {
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            user = new User(result);
+            nickNameText.setText(user.getNickName());
+            nameText.setText(user.getName());
+            ratingText.setText(String.valueOf(user.getRating()));
+            followerText.setText(String.valueOf(user.getFollower()));
+            followingText.setText(String.valueOf(user.getFollowing()));
+            collectionAdapter = new CollectionAdapter();
+            collectionList.setAdapter(collectionAdapter);
         }
     }
 }

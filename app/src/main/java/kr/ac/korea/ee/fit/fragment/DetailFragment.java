@@ -91,7 +91,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         for (int i = 0; i < 3; i++)
             rateButtons[i].setOnClickListener(this);
 
+        // editor card
         editorName = (TextView)view.findViewById(R.id.editorName);
+        editorName.setOnClickListener(this);
         srcLink = (TextView)view.findViewById(R.id.srcLink);
         if (fashion != null) {
             editorName.setText(fashion.getEditorName());
@@ -100,14 +102,13 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
         }
 
+        // comment card
         viewAllComments = (Button)view.findViewById(R.id.viewAllComments);
         viewAllComments.setOnClickListener(this);
-
         commentList = (RecyclerView)view.findViewById(R.id.commentList);
         MyLinearLayoutManager linearLayoutManager = new MyLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         commentList.setLayoutManager(linearLayoutManager);
         commentList.setAdapter(commentListAdapter);
-
         writeComment = (EditText)view.findViewById(R.id.writeComment);
         submitComment = (Button)view.findViewById(R.id.submit);
         submitComment.setOnClickListener(this);
@@ -141,6 +142,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int ratingType;
+        Bundle arg = new Bundle();
         switch (view.getId()) {
             case R.id.button01:
                 ratingType = 1;
@@ -163,11 +165,19 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 return;
             case R.id.viewAllComments:
                 CommentFragment commentFragment = new CommentFragment();
-                Bundle arg = new Bundle();
                 arg.putInt(FASHION_ID, fashionId);
                 commentFragment.setArguments(arg);
                 getFragmentManager().beginTransaction()
                         .replace(R.id.tabContainer, commentFragment)
+                        .addToBackStack(null)
+                        .commit();
+                return;
+            case R.id.editorName:
+                UserFragment editorFragment = new UserFragment();
+                arg.putString(UserFragment.USER_ID, fashion.getEditorId());
+                editorFragment.setArguments(arg);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, editorFragment)
                         .addToBackStack(null)
                         .commit();
                 return;
@@ -213,13 +223,15 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
     private class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.CommentViewHolder> {
 
-        public class CommentViewHolder extends RecyclerView.ViewHolder {
+        public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             ImageView profile;
             TextView nicknameText;
             TextView commentText;
             TextView likeComment;
             TextView timeText;
+
+            Comment comment;
 
             public CommentViewHolder(View view) {
                 super(view);
@@ -234,7 +246,22 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             public void setView(Comment comment) {
                 commentText.setText(comment.getComment());
                 nicknameText.setText(comment.getNickname());
+                nicknameText.setOnClickListener(this);
                 timeText.setText(comment.getCreated());
+
+                this.comment = comment;
+            }
+
+            @Override
+            public void onClick(View v) {
+                UserFragment editorFragment = new UserFragment();
+                Bundle arg = new Bundle();
+                arg.putString(UserFragment.USER_ID, comment.getUserId());
+                editorFragment.setArguments(arg);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, editorFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
 

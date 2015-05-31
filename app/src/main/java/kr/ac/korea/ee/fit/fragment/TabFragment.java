@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.model.User;
 
 /**
  * Created by SHYBook_Air on 15. 5. 19..
@@ -28,10 +29,10 @@ public class TabFragment extends Fragment {
         Bundle arguments = getArguments();
         String tabContent = arguments.getString(TAB_CONTENT);
 
+        Bundle arg = new Bundle();
         switch (tabContent) {
             case FEED:
                 contentFragment = new FeedFragment();
-                Bundle arg = new Bundle();
                 arg.putString(FeedFragment.CONTEXT, FeedFragment.TAB);
                 contentFragment.setArguments(arg);
                 break;
@@ -40,6 +41,8 @@ public class TabFragment extends Fragment {
                 break;
             case USER:
                 contentFragment = new UserFragment();
+                arg.putString(UserFragment.USER_ID, User.getDeviceUserId());
+                contentFragment.setArguments(arg);
                 break;
         }
     }

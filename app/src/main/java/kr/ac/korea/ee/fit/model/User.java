@@ -1,11 +1,13 @@
 package kr.ac.korea.ee.fit.model;
 
 import android.graphics.Bitmap;
+import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 
 import org.json.JSONObject;
 
 import kr.ac.korea.ee.fit.client.HTTPClient;
+import kr.ac.korea.ee.fit.fragment.UserFragment;
 import kr.ac.korea.ee.fit.request.GetUserData;
 
 /**
@@ -26,9 +28,26 @@ public class User {
 
     static User deviceUser;
 
+    private User(String email) {
+        this.email = email;
+    }
+
+    public User(JSONObject result) {
+        try {
+            email = result.getString("email");
+            nickName = result.getString("nick_name");
+            firstName = result.getString("first_name");
+            lastName = result.getString("last_name");
+            following = result.getInt("following");
+            follower = result.getInt("follower");
+            rating = result.getInt("rating");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void createDeviceUser(String email) {
-        deviceUser = new User();
-        deviceUser.email = email;
+        deviceUser = new User(email);
         deviceUser.getUserData();
     }
 
@@ -38,6 +57,10 @@ public class User {
 
     public static String getDeviceUserId() {
         return deviceUser.email;
+    }
+
+    public static boolean isDeviceUser(String userId) {
+        return (deviceUser.email.equals(userId));
     }
 
     void getUserData() {
@@ -73,6 +96,7 @@ public class User {
         @Override
         protected void onPostExecute(JSONObject result) {
             try {
+                email = result.getString("email");
                 nickName = result.getString("nick_name");
                 firstName = result.getString("first_name");
                 lastName = result.getString("last_name");

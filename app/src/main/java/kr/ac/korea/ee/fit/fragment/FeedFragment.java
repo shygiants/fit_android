@@ -48,6 +48,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     FragmentManager fragmentManager;
     String context;
     int collection_id;
+    String user_id;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -56,6 +57,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         Bundle arguments = getArguments();
         context = arguments.getString(CONTEXT);
         collection_id = arguments.getInt(CollectionFragment.COLLECTION_ID);
+        user_id = arguments.getString(CollectionFragment.USER_ID);
 
         fashionCardAdapter = new FashionCardAdapter();
 
@@ -144,7 +146,6 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 int ratingType = fashionCard.getRatingType();
 
                 for (int i = 0; i < 3; i++) {
-//                    button[i].setText(ratingTypes[i]);
                     button[i].setAlpha((i + 1 == ratingType)? RATED : NOT_RATED);
                     button[i].setOnClickListener(this);
                 }
@@ -203,7 +204,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         public FashionCardAdapter() {
             cards = new ArrayList<>();
 
-            Feed feed = (context.equals(COLLECTION))? Feed.getCollection(collection_id) : Feed.getFeed();
+            Feed feed = (context.equals(COLLECTION))? Feed.getCollection(collection_id, user_id) : Feed.getFeed();
 
             FeedTask feeder = new FeedTask();
             feeder.start(feed);

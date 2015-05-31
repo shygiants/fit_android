@@ -16,8 +16,10 @@ import kr.ac.korea.ee.fit.R;
 public class CollectionFragment extends Fragment {
 
     public static final String COLLECTION_ID = "COLLECTION ID";
+    public static final String USER_ID = "USER ID";
 
     int collection_id;
+    String user_id;
     boolean firstTime = true;
 
     FeedFragment collection;
@@ -30,11 +32,14 @@ public class CollectionFragment extends Fragment {
 
         Bundle args = getArguments();
         collection_id = args.getInt(COLLECTION_ID);
+        user_id = args.getString(USER_ID);
 
         collection = new FeedFragment();
         Bundle arg = new Bundle();
         arg.putString(FeedFragment.CONTEXT, FeedFragment.COLLECTION);
         arg.putInt(COLLECTION_ID, collection_id);
+        arg.putString(USER_ID, user_id);
+
         collection.setArguments(arg);
     }
 

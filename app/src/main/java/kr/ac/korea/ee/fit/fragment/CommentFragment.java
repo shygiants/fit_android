@@ -113,13 +113,15 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
     private class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.CommentViewHolder> {
 
-        public class CommentViewHolder extends RecyclerView.ViewHolder {
+        public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             ImageView profile;
             TextView nicknameText;
             TextView commentText;
             TextView likeComment;
             TextView timeText;
+
+            Comment comment;
 
             public CommentViewHolder(View view) {
                 super(view);
@@ -134,7 +136,22 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
             public void setView(Comment comment) {
                 commentText.setText(comment.getComment());
                 nicknameText.setText(comment.getNickname());
+                nicknameText.setOnClickListener(this);
                 timeText.setText(comment.getCreated());
+
+                this.comment = comment;
+            }
+
+            @Override
+            public void onClick(View v) {
+                UserFragment editorFragment = new UserFragment();
+                Bundle arg = new Bundle();
+                arg.putString(UserFragment.USER_ID, comment.getUserId());
+                editorFragment.setArguments(arg);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, editorFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
 

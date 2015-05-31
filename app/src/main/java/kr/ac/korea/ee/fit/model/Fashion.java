@@ -15,6 +15,7 @@ public class Fashion {
     String srcLink;
     String gender;
     String editorName;
+    String editorId;
     String season;
     String style;
     String age;
@@ -26,6 +27,7 @@ public class Fashion {
             srcLink = fashion.getString("src_link");
             gender = fashion.getString("gender_label");
             editorName = fashion.getString("last_name") + fashion.getString("first_name");
+            editorId = fashion.getString("email");
             season = fashion.getString("season_label");
             style = fashion.getString("style_label");
             age = fashion.getString("age_label");
@@ -39,6 +41,8 @@ public class Fashion {
     public String getEditorName() {
         return editorName;
     }
+
+    public String getEditorId() { return editorId; }
 
     public int getRate() {
         return rate;
