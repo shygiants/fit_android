@@ -1,43 +1,36 @@
 package kr.ac.korea.ee.fit.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
+import kr.ac.korea.ee.fit.core.MyLinearLayoutManager;
 import kr.ac.korea.ee.fit.model.Fashion;
-import kr.ac.korea.ee.fit.model.CommentItem;
-import kr.ac.korea.ee.fit.model.FashionCard;
+import kr.ac.korea.ee.fit.model.Comment;
 import kr.ac.korea.ee.fit.model.User;
-import kr.ac.korea.ee.fit.request.Detail;
 import kr.ac.korea.ee.fit.request.Event;
+import kr.ac.korea.ee.fit.request.Feed;
 
 /**
  * Created by SHYBook_Air on 15. 5. 11..
@@ -50,17 +43,22 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     static final float RATED = (float)1.0;
     static final float NOT_RATED = (float)0.26;
 
+    // attributes
     int fashionId;
     Bitmap image;
+    Fashion fashion;
 
-    View detailView;
-    RecyclerView commentList;
-    CommentListAdapter commentListAdapter;
-    ImageButton[] button;
-    FeedFragment relatedFragment;
+    // views
+    ImageButton[] rateButtons;
     TextView editorName;
     TextView srcLink;
+    RecyclerView commentList;
+    EditText writeComment;
+    Button submitComment;
+    FeedFragment relatedFragment;
+    Button viewAllComments;
 
+    CommentListAdapter commentListAdapter;
     boolean firstTime = true;
 
     @Override
@@ -68,7 +66,11 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstance);
         fashionId = getArguments().getInt(FASHION_ID);
         image = getArguments().getParcelable(IMAGE);
-        commentListAdapter = new CommentListAdapter(fashionId);
+
+        GetDetailTask getDetail = new GetDetailTask();
+        getDetail.start(Feed.getDetail(fashionId));
+
+        commentListAdapter = new CommentListAdapter();
 
         relatedFragment = new FeedFragment();
         Bundle arg = new Bundle();
@@ -80,28 +82,35 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ((ImageView) view.findViewById(R.id.fashionImg)).setImageBitmap(image);
+        ((ImageView)view.findViewById(R.id.fashionImg)).setImageBitmap(image);
+
+        rateButtons = new ImageButton[3];
+        rateButtons[0] = (ImageButton)view.findViewById(R.id.button01);
+        rateButtons[1] = (ImageButton)view.findViewById(R.id.button02);
+        rateButtons[2] = (ImageButton)view.findViewById(R.id.button03);
+        for (int i = 0; i < 3; i++)
+            rateButtons[i].setOnClickListener(this);
 
         editorName = (TextView)view.findViewById(R.id.editorName);
         srcLink = (TextView)view.findViewById(R.id.srcLink);
+        if (fashion != null) {
+            editorName.setText(fashion.getEditorName());
+            srcLink.setText(fashion.getSrcLink());
+            for (int i = 0; i < 3; i++)
+                rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
+        }
 
-//        CommentFragment commentFragment = new CommentFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(CommentFragment.FASHION_ID, fashionId);
-//        commentFragment.setArguments(args);
+        viewAllComments = (Button)view.findViewById(R.id.viewAllComments);
+        viewAllComments.setOnClickListener(this);
 
         commentList = (RecyclerView)view.findViewById(R.id.commentList);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        MyLinearLayoutManager linearLayoutManager = new MyLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         commentList.setLayoutManager(linearLayoutManager);
         commentList.setAdapter(commentListAdapter);
 
-        button = new ImageButton[3];
-        button[0] = (ImageButton)view.findViewById(R.id.button01);
-        button[1] = (ImageButton)view.findViewById(R.id.button02);
-        button[2] = (ImageButton)view.findViewById(R.id.button03);
-        for (int i = 0; i < 3; i++) {
-            button[i].setOnClickListener(this);
-        }
+        writeComment = (EditText)view.findViewById(R.id.writeComment);
+        submitComment = (Button)view.findViewById(R.id.submit);
+        submitComment.setOnClickListener(this);
 
         if (firstTime) {
             getChildFragmentManager()
@@ -111,8 +120,20 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             firstTime = false;
         }
 
-        GetDetailTask getDetail = new GetDetailTask();
-        getDetail.start(new Detail(String.valueOf(fashionId)));
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (writeComment.isFocused()) {
+                        Rect outRect = new Rect();
+                        writeComment.getGlobalVisibleRect(outRect);
+                        if (!outRect.contains((int) event.getRawX(), (int) event.getRawY()))
+                            clearFocus();
+                    }
+                }
+                return false;
+            }
+        });
 
         return view;
     }
@@ -130,28 +151,59 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             case R.id.button03:
                 ratingType = 3;
                 break;
+            case R.id.submit:
+                String comment = writeComment.getText().toString();
+                if (comment.length() > 0) {
+                    writeComment.setText("");
+                    Comment input = new Comment(fashionId, comment);
+                    CommentTask commentTask = new CommentTask(input);
+                    commentTask.start(Event.comment(input));
+                }
+                clearFocus();
+                return;
+            case R.id.viewAllComments:
+                CommentFragment commentFragment = new CommentFragment();
+                Bundle arg = new Bundle();
+                arg.putInt(FASHION_ID, fashionId);
+                commentFragment.setArguments(arg);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, commentFragment)
+                        .addToBackStack(null)
+                        .commit();
+                return;
             default:
                 ratingType = 0;
                 break;
         }
 
-        Event ratingEvent = new Event(User.get().getEmail(), fashionId, ratingType);
         RateTask rate = new RateTask((ImageButton)view);
-        rate.start(ratingEvent);
+        rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
     }
 
-    private class GetDetailTask extends HTTPClient<Detail> {
+    void clearFocus() {
+        writeComment.clearFocus();
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(writeComment.getWindowToken(), 0);
+    }
+
+    private class GetDetailTask extends HTTPClient<Feed> {
         @Override
         protected void onPostExecute(JSONObject response) {
             try {
                 JSONArray items = response.getJSONArray("items");
-                Fashion fashion = new Fashion(response.getJSONObject("fashion"));
+                JSONArray comments = response.getJSONArray("comments");
+                fashion = new Fashion(response.getJSONObject("fashion"));
 
                 editorName.setText(fashion.getEditorName());
                 srcLink.setText("출처 - " + fashion.getSrcLink());
 
                 for (int i = 0; i < 3; i++)
-                    button[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
+                    rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
+
+                int size = comments.length();
+                for (int i = 0; i < size; i++)
+                    commentListAdapter.addComment(new Comment(comments.getJSONObject(i)));
+
             } catch (Exception e) {
                 e.printStackTrace();
                 // TODO: Exception
@@ -179,32 +231,23 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 timeText = (TextView)view.findViewById(R.id.commentTime);
             }
 
-            public void setView(CommentItem commentItem) {
-                commentText.setText(commentItem.getComment());
-                nicknameText.setText(commentItem.getNickname());
+            public void setView(Comment comment) {
+                commentText.setText(comment.getComment());
+                nicknameText.setText(comment.getNickname());
+                timeText.setText(comment.getCreated());
             }
         }
 
-        int fashion_id;
-        List<CommentItem> commentItems = new ArrayList<>();
-
-        public CommentListAdapter(int fashion_id) {
-            this.fashion_id = fashion_id;
-
-            commentItems.add(new CommentItem());
-            commentItems.add(new CommentItem());
-            commentItems.add(new CommentItem());
-
-        }
+        ArrayList<Comment> comments = new ArrayList<>();
 
         @Override
         public int getItemCount() {
-            return commentItems.size();
+            return comments.size();
         }
 
         @Override
         public void onBindViewHolder(CommentViewHolder holder, int position) {
-            holder.setView(commentItems.get(position));
+            holder.setView(comments.get(position));
         }
 
         @Override
@@ -213,6 +256,11 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                     .inflate(R.layout.comment_item, parent, false);
 
             return new CommentViewHolder(view);
+        }
+
+        public void addComment(Comment comment) {
+            comments.add(comment);
+            notifyDataSetChanged();
         }
     }
 
@@ -229,12 +277,31 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 String success = response.getString("success");
                 if (success.equals("true")) {
                     for (int i = 0; i < 3; i++)
-                        button[i].setAlpha(NOT_RATED);
+                        rateButtons[i].setAlpha(NOT_RATED);
                     buttonClicked.setAlpha(RATED);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 // TODO: Exception
+            }
+        }
+    }
+
+    private class CommentTask extends HTTPClient<Event> {
+
+        Comment comment;
+
+        public CommentTask(Comment comment) {
+            this.comment = comment;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                if (result.getBoolean("success"))
+                    commentListAdapter.addComment(comment);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

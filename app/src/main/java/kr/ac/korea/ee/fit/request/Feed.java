@@ -25,16 +25,14 @@ public class Feed extends PostData {
             return feed;
 
         feed = new Feed();
-        feed.url = "http://" + feed.ipAddress + "/feed/getAll";
-        feed.data = new ArrayList<>();
-        feed.data.add(new BasicNameValuePair("email", User.get().getEmail()));
+        feed.url = "http://" + ipAddress + "/feed/getAll";
+        feed.add("email", User.getDeviceUserId());
         return feed;
     }
 
     public static Feed getFiltered(ArrayList<Filter> filters) {
         Feed feed = new Feed();
-        feed.url = "http://" + feed.ipAddress + "/feed/getFiltered";
-        feed.data = new ArrayList<>();
+        feed.url = "http://" + ipAddress + "/feed/getFiltered";
 
         JSONArray filters_json = new JSONArray();
 
@@ -53,17 +51,17 @@ public class Feed extends PostData {
             Log.e("Feed", filters_json.toString());
         }
 
-        feed.data.add(new BasicNameValuePair("filters", filters_json.toString()));
-        feed.data.add(new BasicNameValuePair("email", User.get().getEmail()));
+        feed.add("filters", filters_json.toString());
+        feed.add("email", User.getDeviceUserId());
 
         return feed;
     }
 
     static Feed getRated() {
         Feed feed = new Feed();
-        feed.url = "http://" + feed.ipAddress + "/feed/getRated";
-        feed.data = new ArrayList<>();
-        feed.data.add(new BasicNameValuePair("email", User.get().getEmail()));
+        feed.url = "http://" + ipAddress + "/feed/getRated";
+
+        feed.add("email", User.getDeviceUserId());
 
         return feed;
     }
@@ -75,6 +73,27 @@ public class Feed extends PostData {
 
         // TODO: getting collection
         return null;
+    }
+
+    public static Feed getDetail(int fashion_id) {
+        Feed getDetail = new Feed();
+
+        getDetail.url = "http://" + ipAddress + "/feed/getDetail";
+
+        getDetail.add("user_id", User.getDeviceUserId());
+        getDetail.add("fashion_id", fashion_id);
+
+        return getDetail;
+    }
+
+    public static Feed getComments(int fashion_id) {
+        Feed getComments = new Feed();
+
+        getComments.url = "http://" + ipAddress + "/feed/getComments";
+
+        getComments.add("fashion_id", fashion_id);
+
+        return getComments;
     }
 
     @Override

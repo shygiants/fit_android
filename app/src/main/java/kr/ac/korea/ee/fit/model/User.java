@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.model;
 
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import org.json.JSONObject;
@@ -17,33 +18,35 @@ public class User {
     String nickName;
     String firstName;
     String lastName;
-    ImageView profile;
     int following;
     int follower;
     int rating;
 
-    static User user;
+    Bitmap profile;
 
-    public static User get() {
-        if (user != null)
-            return user;
-        createUser("NULL");
-        return user;
+    static User deviceUser;
+
+    public static void createDeviceUser(String email) {
+        deviceUser = new User();
+        deviceUser.email = email;
+        deviceUser.getUserData();
     }
 
-    public static void createUser(String email) {
-        user = new User();
-        user.email = email;
-        user.getUserData();
+    public static User getDeviceUser() {
+        return deviceUser;
     }
 
-    public String getEmail() {
-        return email;
+    public static String getDeviceUserId() {
+        return deviceUser.email;
     }
 
     void getUserData() {
         UserGetterTask getter = new UserGetterTask();
         getter.start(new GetUserData(email));
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getNickName() {

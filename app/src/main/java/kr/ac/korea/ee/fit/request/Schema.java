@@ -9,7 +9,7 @@ public class Schema extends GetData {
 
     public static Schema schemaDataGetter() {
         Schema getter = new Schema();
-        getter.url = "http://" + getter.ipAddress + "/feed/getSchemaData";
+        getter.url = "http://" + ipAddress + "/feed/getSchemaData";
 
         return getter;
     }

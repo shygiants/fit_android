@@ -169,9 +169,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                         break;
                 }
 
-                Event ratingEvent = new Event(User.get().getEmail(), fashionId, ratingType);
                 RateTask rate = new RateTask((ImageButton)view);
-                rate.start(ratingEvent);
+                rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
             }
 
             class RateTask extends HTTPClient<Event> {

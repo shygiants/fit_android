@@ -34,7 +34,8 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = User.get();
+        // TODO: consider context (device user or any other users)
+        user = User.getDeviceUser();
         collectionAdapter = new CollectionAdapter();
     }
 

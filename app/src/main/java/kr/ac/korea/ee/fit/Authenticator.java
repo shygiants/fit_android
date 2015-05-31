@@ -48,7 +48,7 @@ public class Authenticator {
         if (store == null)
             store = context.getSharedPreferences(ACCOUNT, Context.MODE_PRIVATE);
 
-        User.createUser(store.getString(EMAIL, null));
+        User.createDeviceUser(store.getString(EMAIL, null));
         SchemaData.Init();
     }
 

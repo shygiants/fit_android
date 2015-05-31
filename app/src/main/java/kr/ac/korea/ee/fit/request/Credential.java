@@ -14,19 +14,17 @@ public class Credential extends PostData {
     public Credential(String email, String password) {
         url = "http://" + ipAddress + "/authentication/login";
 
-        data = new ArrayList<>();
-        data.add(new BasicNameValuePair("email", email));
-        data.add(new BasicNameValuePair("password", password));
+        add("email", email);
+        add("password", password);
     }
 
     public Credential(String email, String password, String firstName, String lastName) {
         url = "http://" + ipAddress + "/authentication/register";
 
-        data = new ArrayList<>();
-        data.add(new BasicNameValuePair("email", email));
-        data.add(new BasicNameValuePair("password", password));
-        data.add(new BasicNameValuePair("first_name", firstName));
-        data.add(new BasicNameValuePair("last_name", lastName));
+        add("email", email);
+        add("password", password);
+        add("first_name", firstName);
+        add("last_name", lastName);
     }
 
     @Override
