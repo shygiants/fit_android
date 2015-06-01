@@ -49,6 +49,17 @@ public class Event extends PostData {
         return followEvent;
     }
 
+    public static Event likeComment(int comment_id) {
+        Event likeComment = new Event();
+
+        likeComment.url = "http://" + ipAddress + "/eventServer/likeComment";
+
+        likeComment.add("user_id", User.getDeviceUserId());
+        likeComment.add("comment_id", comment_id);
+
+        return likeComment;
+    }
+
     @Override
     public String getURL() {
         return url;

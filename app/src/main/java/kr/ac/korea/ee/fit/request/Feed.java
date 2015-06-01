@@ -92,6 +92,7 @@ public class Feed extends PostData {
         getComments.url = "http://" + ipAddress + "/feed/getComments";
 
         getComments.add("fashion_id", fashion_id);
+        getComments.add("user_id", User.getDeviceUserId());
 
         return getComments;
     }

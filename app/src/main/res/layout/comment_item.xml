@@ -57,6 +57,15 @@
 				android:alpha="0.87"/>
 
 			<TextView
+				android:text="좋아요"
+				android:id="@+id/numOfLikes"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="4dp"
+				android:textColor="#000"
+				android:alpha="0.87"/>
+
+			<TextView
 		 		android:id="@+id/commentTime"
 			    android:layout_width="wrap_content" 
 			    android:layout_height="wrap_content"

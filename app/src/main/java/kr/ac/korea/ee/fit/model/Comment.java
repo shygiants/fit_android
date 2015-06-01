@@ -19,6 +19,8 @@ public class Comment {
     String userId;
     int fashionId;
     String created;
+    int numOfLikes;
+    boolean userLikes;
 
     public Comment(JSONObject jsonObject) {
         try {
@@ -27,6 +29,8 @@ public class Comment {
             userId = jsonObject.getString("user_id");
             id = jsonObject.getInt("id");
             created = jsonObject.getString("created_date");
+            numOfLikes = (jsonObject.getString("num_of_likes").equals("null"))? 0 : jsonObject.getInt("num_of_likes");
+            userLikes = jsonObject.getString("userLikes").equals(User.getDeviceUserId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,5 +72,9 @@ public class Comment {
     public int getFashionId() {
         return fashionId;
     }
+
+    public int getNumOfLikes() { return numOfLikes; }
+
+    public boolean userLikes() { return userLikes; }
 }
 

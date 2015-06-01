@@ -253,6 +253,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             TextView nicknameText;
             TextView commentText;
             TextView likeComment;
+            TextView numOfLikes;
             TextView timeText;
 
             Comment comment;
@@ -264,6 +265,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 nicknameText = (TextView)view.findViewById(R.id.nickname);
                 commentText = (TextView)view.findViewById(R.id.comment);
                 likeComment = (TextView)view.findViewById(R.id.likeComment);
+                likeComment.setOnClickListener(this);
+                numOfLikes = (TextView)view.findViewById(R.id.numOfLikes);
                 timeText = (TextView)view.findViewById(R.id.commentTime);
             }
 
@@ -271,6 +274,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 commentText.setText(comment.getComment());
                 nicknameText.setText(comment.getNickname());
                 nicknameText.setOnClickListener(this);
+                likeComment.setText((comment.userLikes()) ? "좋아요 취소" : "좋아요");
+                numOfLikes.setText(String.valueOf(comment.getNumOfLikes()));
                 timeText.setText(comment.getCreated());
 
                 this.comment = comment;
@@ -278,14 +283,22 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onClick(View v) {
-                UserFragment editorFragment = new UserFragment();
-                Bundle arg = new Bundle();
-                arg.putString(UserFragment.USER_ID, comment.getUserId());
-                editorFragment.setArguments(arg);
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.tabContainer, editorFragment)
-                        .addToBackStack(null)
-                        .commit();
+                switch (v.getId()) {
+                    case R.id.nickname:
+                        UserFragment editorFragment = new UserFragment();
+                        Bundle arg = new Bundle();
+                        arg.putString(UserFragment.USER_ID, comment.getUserId());
+                        editorFragment.setArguments(arg);
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.tabContainer, editorFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        break;
+                    case R.id.likeComment:
+                        LikeComment likeComment = new LikeComment(this);
+                        likeComment.start(Event.likeComment(comment.getId()));
+                        break;
+                }
             }
         }
 
@@ -368,6 +381,30 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 followButton.setSelected(isFollowing);
                 followButton.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
                 followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class LikeComment extends HTTPClient<Event> {
+
+        TextView likeText;
+        TextView numOfLikes;
+
+        public LikeComment(CommentListAdapter.CommentViewHolder commentViewHolder) {
+            likeText = commentViewHolder.likeComment;
+            numOfLikes = commentViewHolder.numOfLikes;
+        }
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                boolean like = result.getBoolean("like");
+                likeText.setText((like) ? "좋아요 취소" : "좋아요");
+                int num = Integer.parseInt(numOfLikes.getText().toString());
+                num += (like)? 1 : (-1);
+                numOfLikes.setText(String.valueOf(num));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
