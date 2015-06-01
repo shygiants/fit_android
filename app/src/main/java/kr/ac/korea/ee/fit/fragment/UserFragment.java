@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +18,13 @@ import org.json.JSONObject;
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.User;
+import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.GetUserData;
 
 /**
  * Created by SHYBook_Air on 15. 5. 28..
  */
-public class UserFragment extends Fragment {
+public class UserFragment extends Fragment implements View.OnClickListener {
 
     public static final String USER_ID = "USER ID";
 
@@ -35,6 +37,8 @@ public class UserFragment extends Fragment {
     TextView ratingText;
     TextView followerText;
     TextView followingText;
+
+    Button followOrEdit;
 
     RecyclerView collectionList;
     CollectionAdapter collectionAdapter;
@@ -65,6 +69,9 @@ public class UserFragment extends Fragment {
         ratingText = (TextView)view.findViewById(R.id.rating);
         followerText = (TextView)view.findViewById(R.id.follower);
         followingText = (TextView)view.findViewById(R.id.following);
+        followOrEdit = (Button)view.findViewById(R.id.followOrEdit);
+
+        followOrEdit.setOnClickListener(this);
 
         collectionList = (RecyclerView)view.findViewById(R.id.collectionList);
         Configuration config = getResources().getConfiguration();
@@ -81,9 +88,28 @@ public class UserFragment extends Fragment {
             followerText.setText(String.valueOf(user.getFollower()));
             followingText.setText(String.valueOf(user.getFollowing()));
             collectionList.setAdapter(collectionAdapter);
-        }
 
+            if (isDeviceUser) {
+                followOrEdit.setSelected(false);
+                followOrEdit.setText("프로필 편집");
+                followOrEdit.setTextColor(getResources().getColor(R.color.accent));
+            }
+            else {
+                boolean isFollowing = user.isFollowing();
+                followOrEdit.setSelected(isFollowing);
+                followOrEdit.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+                followOrEdit.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+            }
+        }
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (!isDeviceUser) {
+            FollowTask followTask = new FollowTask();
+            followTask.start(Event.follow(user.getEmail()));
+        }
     }
 
     private class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.CollectionHolder> {
@@ -153,6 +179,26 @@ public class UserFragment extends Fragment {
             followingText.setText(String.valueOf(user.getFollowing()));
             collectionAdapter = new CollectionAdapter();
             collectionList.setAdapter(collectionAdapter);
+
+            boolean isFollowing = user.isFollowing();
+            followOrEdit.setSelected(isFollowing);
+            followOrEdit.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+            followOrEdit.setTextColor(getResources().getColor((isFollowing) ? R.color.icons : R.color.accent));
+        }
+    }
+
+    private class FollowTask extends HTTPClient<Event> {
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                boolean isFollowing = result.getBoolean("is_following");
+                followOrEdit.setSelected(isFollowing);
+                followOrEdit.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+                followOrEdit.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

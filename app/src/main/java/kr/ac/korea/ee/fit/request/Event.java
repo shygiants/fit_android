@@ -5,6 +5,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.model.Comment;
+import kr.ac.korea.ee.fit.model.User;
 
 /**
  * Created by SHYBook_Air on 15. 4. 3..
@@ -37,14 +38,15 @@ public class Event extends PostData {
         return commentEvent;
     }
 
-    public static Event getComments(int fashion_id) {
-        Event getComments = new Event();
+    public static Event follow(String followed_id) {
+        Event followEvent = new Event();
 
-        getComments.url = "http://" + ipAddress + "/feed/getComments";
+        followEvent.url = "http://" + ipAddress + "/eventServer/follow";
 
-        getComments.add("fashion_id", fashion_id);
+        followEvent.add("follower_id", User.getDeviceUserId());
+        followEvent.add("followed_id", followed_id);
 
-        return getComments;
+        return followEvent;
     }
 
     @Override

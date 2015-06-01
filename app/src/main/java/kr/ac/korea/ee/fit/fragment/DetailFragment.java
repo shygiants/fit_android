@@ -52,6 +52,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     ImageButton[] rateButtons;
     TextView editorName;
     TextView srcLink;
+    Button followButton;
     RecyclerView commentList;
     EditText writeComment;
     Button submitComment;
@@ -95,9 +96,20 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         editorName = (TextView)view.findViewById(R.id.editorName);
         editorName.setOnClickListener(this);
         srcLink = (TextView)view.findViewById(R.id.srcLink);
+        followButton = (Button)view.findViewById(R.id.follow);
+        followButton.setOnClickListener(this);
         if (fashion != null) {
             editorName.setText(fashion.getEditorName());
             srcLink.setText(fashion.getSrcLink());
+
+            if (fashion.getEditorId().equals(User.getDeviceUserId()))
+                followButton.setVisibility(View.INVISIBLE);
+            else {
+                boolean isFollowing = fashion.getFollowing();
+                followButton.setSelected(isFollowing);
+                followButton.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+                followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+            }
             for (int i = 0; i < 3; i++)
                 rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
         }
@@ -156,7 +168,6 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             case R.id.submit:
                 String comment = writeComment.getText().toString();
                 if (comment.length() > 0) {
-                    writeComment.setText("");
                     Comment input = new Comment(fashionId, comment);
                     CommentTask commentTask = new CommentTask(input);
                     commentTask.start(Event.comment(input));
@@ -180,6 +191,10 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                         .replace(R.id.tabContainer, editorFragment)
                         .addToBackStack(null)
                         .commit();
+                return;
+            case R.id.follow:
+                FollowTask followTask = new FollowTask();
+                followTask.start(Event.follow(fashion.getEditorId()));
                 return;
             default:
                 ratingType = 0;
@@ -206,6 +221,15 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
                 editorName.setText(fashion.getEditorName());
                 srcLink.setText("출처 - " + fashion.getSrcLink());
+
+                if (fashion.getEditorId().equals(User.getDeviceUserId()))
+                    followButton.setVisibility(View.INVISIBLE);
+                else {
+                    boolean isFollowing = fashion.getFollowing();
+                    followButton.setSelected(isFollowing);
+                    followButton.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+                    followButton.setTextColor(getResources().getColor((isFollowing) ? R.color.icons : R.color.accent));
+                }
 
                 for (int i = 0; i < 3; i++)
                     rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
@@ -325,8 +349,25 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(JSONObject result) {
             try {
-                if (result.getBoolean("success"))
+                if (result.getBoolean("success")) {
+                    writeComment.setText("");
                     commentListAdapter.addComment(comment);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class FollowTask extends HTTPClient<Event> {
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                boolean isFollowing = result.getBoolean("is_following");
+                followButton.setSelected(isFollowing);
+                followButton.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
+                followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -24,6 +24,8 @@ public class User {
     int follower;
     int rating;
 
+    boolean isFollowing;
+
     Bitmap profile;
 
     static User deviceUser;
@@ -41,6 +43,7 @@ public class User {
             following = result.getInt("following");
             follower = result.getInt("follower");
             rating = result.getInt("rating");
+            isFollowing = result.getBoolean("is_following");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,6 +94,8 @@ public class User {
     public int getRating() {
         return rating;
     }
+
+    public boolean isFollowing() { return isFollowing; }
 
     private class UserGetterTask extends HTTPClient<GetUserData> {
         @Override

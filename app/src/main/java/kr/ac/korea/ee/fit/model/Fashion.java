@@ -21,6 +21,7 @@ public class Fashion {
     String age;
     String createDate;
     int rate;
+    boolean following;
 
     public Fashion(JSONObject fashion) {
         try {
@@ -33,6 +34,7 @@ public class Fashion {
             age = fashion.getString("age_label");
             createDate = fashion.getString("created_date");
             rate = fashion.getInt("type_id");
+            following = fashion.getString("follower_id").equals(User.getDeviceUserId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,4 +53,6 @@ public class Fashion {
     public String getSrcLink() {
         return srcLink;
     }
+
+    public boolean getFollowing() { return following; }
 }
