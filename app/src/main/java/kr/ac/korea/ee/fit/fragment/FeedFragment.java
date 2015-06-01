@@ -204,7 +204,17 @@ public class FeedFragment extends android.support.v4.app.Fragment {
         public FashionCardAdapter() {
             cards = new ArrayList<>();
 
-            Feed feed = (context.equals(COLLECTION))? Feed.getCollection(collection_id, user_id) : Feed.getFeed();
+            Feed feed;
+            switch (context) {
+                case COLLECTION:
+                    feed = Feed.getCollection(collection_id, user_id);
+                    break;
+                case SEARCH:
+                    feed = Feed.getRecommended();
+                    break;
+                default:
+                    feed = Feed.getFeed();
+            }
 
             FeedTask feeder = new FeedTask();
             feeder.start(feed);

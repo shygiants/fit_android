@@ -30,6 +30,15 @@ public class Feed extends PostData {
         return feed;
     }
 
+    public static Feed getRecommended() {
+        Feed feed = new Feed();
+        feed.url = "http://" + ipAddress + "/feed/getRecommended";
+
+        feed.add("user_id", User.getDeviceUserId());
+
+        return feed;
+    }
+
     public static Feed getFiltered(ArrayList<Filter> filters) {
         Feed feed = new Feed();
         feed.url = "http://" + ipAddress + "/feed/getFiltered";
