@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -35,7 +36,7 @@ import kr.ac.korea.ee.fit.request.Feed;
 /**
  * Created by SHYBook_Air on 15. 5. 11..
  */
-public class FeedFragment extends android.support.v4.app.Fragment {
+public class FeedFragment extends android.support.v4.app.Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String CONTEXT = "CONTEXT";
 
@@ -52,6 +53,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     String user_id;
 
     ProgressDialog dialog;
+    SwipeRefreshLayout swipe;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -86,6 +88,9 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
+        swipe = (SwipeRefreshLayout)view.findViewById(R.id.swipe);
+        swipe.setOnRefreshListener(this);
+
         RecyclerView cardList = (RecyclerView)view.findViewById(R.id.cardList);
 
         Configuration config = getResources().getConfiguration();
@@ -111,6 +116,11 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                     .replace(R.id.tabContainer, detailFragment)
                     .addToBackStack(null)
                     .commit();
+    }
+
+    @Override
+    public void onRefresh() {
+        fashionCardAdapter.refresh();
     }
 
     public void refresh(Feed getFiltered) {
@@ -210,11 +220,11 @@ public class FeedFragment extends android.support.v4.app.Fragment {
 
         ArrayList<FashionCard> cards;
         String[] ratingTypes;
+        Feed feed;
 
         public FashionCardAdapter() {
             cards = new ArrayList<>();
 
-            Feed feed;
             switch (context) {
                 case COLLECTION:
                     feed = Feed.getCollection(collection_id, user_id);
@@ -234,8 +244,17 @@ public class FeedFragment extends android.support.v4.app.Fragment {
             cards.clear();
             notifyDataSetChanged();
 
+            feed = getFiltered;
             FeedTask feeder = new FeedTask();
             feeder.start(getFiltered);
+        }
+
+        public void refresh() {
+            cards.clear();
+            notifyDataSetChanged();
+
+            FeedTask feeder = new FeedTask();
+            feeder.start(feed);
         }
 
         @Override
@@ -317,7 +336,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
 
             @Override
             protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
+                swipe.setRefreshing(false);
             }
         }
     }
