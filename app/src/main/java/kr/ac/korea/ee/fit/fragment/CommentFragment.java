@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
     EditText writeComment;
     Button submitComment;
 
+    ProgressDialog dialog;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,12 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
         adapter = new CommentListAdapter();
         GetComments getComments = new GetComments();
         getComments.start(Feed.getComments(fashion_id));
+
+        dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("진행중...");
+        dialog.setTitle("네트워크 체크");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
     }
 
 
@@ -95,6 +104,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
             case R.id.submit:
                 String comment = writeComment.getText().toString();
                 if (comment.length() > 0) {
+                    dialog.show();
                     writeComment.setText("");
                     Comment input = new Comment(fashion_id, comment);
                     PostComment postComment = new PostComment(input);
@@ -161,6 +171,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
                                 .commit();
                         break;
                     case R.id.likeComment:
+                        dialog.show();
                         LikeComment likeComment = new LikeComment(this);
                         likeComment.start(Event.likeComment(comment.getId()));
                         break;
@@ -209,6 +220,8 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
                     adapter.addComment(comment);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }
@@ -250,6 +263,8 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }

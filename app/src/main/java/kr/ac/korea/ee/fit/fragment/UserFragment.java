@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -43,6 +44,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     RecyclerView collectionList;
     CollectionAdapter collectionAdapter;
 
+    ProgressDialog dialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             UserGetterTask getter = new UserGetterTask();
             getter.start(new GetUserData(userId));
         }
+
+        dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("진행중...");
+        dialog.setTitle("네트워크 체크");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
     }
 
     @Override
@@ -107,6 +116,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (!isDeviceUser) {
+            dialog.show();
             FollowTask followTask = new FollowTask();
             followTask.start(Event.follow(user.getEmail()));
         }
@@ -198,6 +208,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 followOrEdit.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }

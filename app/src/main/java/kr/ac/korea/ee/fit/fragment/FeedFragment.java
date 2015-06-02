@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -50,6 +51,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     int collection_id;
     String user_id;
 
+    ProgressDialog dialog;
+
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
@@ -71,6 +74,12 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 fragmentManager = getParentFragment().getFragmentManager();
                 break;
         }
+
+        dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("진행중...");
+        dialog.setTitle("네트워크 체크");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
     }
 
     @Override
@@ -168,6 +177,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                         break;
                 }
 
+                dialog.show();
                 RateTask rate = new RateTask((ImageButton)view);
                 rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
             }
@@ -191,6 +201,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                     } catch (Exception e) {
                         e.printStackTrace();
                         // TODO: Exception
+                    } finally {
+                        dialog.dismiss();
                     }
                 }
             }

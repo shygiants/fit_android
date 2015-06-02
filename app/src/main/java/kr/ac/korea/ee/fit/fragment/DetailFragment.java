@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -17,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,9 +41,6 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public static final String FASHION_ID = "FashionID";
     public static final String IMAGE = "IMAGE";
 
-    static final float RATED = (float)1.0;
-    static final float NOT_RATED = (float)0.26;
-
     // attributes
     int fashionId;
     Bitmap image;
@@ -61,6 +57,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     FeedFragment relatedFragment;
     Button viewAllComments;
 
+
+    ProgressDialog dialog;
     CommentListAdapter commentListAdapter;
     boolean firstTime = true;
 
@@ -79,6 +77,12 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         Bundle arg = new Bundle();
         arg.putString(FeedFragment.CONTEXT, FeedFragment.DETAIL);
         relatedFragment.setArguments(arg);
+
+        dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("진행중...");
+        dialog.setTitle("네트워크 체크");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
     }
 
     @Override
@@ -113,7 +117,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
             }
             for (int i = 0; i < 3; i++)
-                rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
+                rateButtons[i].setSelected(i + 1 == fashion.getRate());
         }
 
         // comment card
@@ -170,6 +174,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             case R.id.submit:
                 String comment = writeComment.getText().toString();
                 if (comment.length() > 0) {
+                    dialog.show();
                     Comment input = new Comment(fashionId, comment);
                     CommentTask commentTask = new CommentTask(input);
                     commentTask.start(Event.comment(input));
@@ -195,6 +200,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                         .commit();
                 return;
             case R.id.follow:
+                dialog.show();
                 FollowTask followTask = new FollowTask();
                 followTask.start(Event.follow(fashion.getEditorId()));
                 return;
@@ -202,7 +208,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 ratingType = 0;
                 break;
         }
-
+        dialog.show();
         RateTask rate = new RateTask((ImageButton)view);
         rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
     }
@@ -297,6 +303,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                                 .commit();
                         break;
                     case R.id.likeComment:
+                        dialog.show();
                         LikeComment likeComment = new LikeComment(this);
                         likeComment.start(Event.likeComment(comment.getId()));
                         break;
@@ -349,6 +356,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             } catch (Exception e) {
                 e.printStackTrace();
                 // TODO: Exception
+            } finally {
+                dialog.dismiss();
             }
         }
     }
@@ -370,6 +379,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }
@@ -385,6 +396,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }
@@ -409,6 +422,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                dialog.dismiss();
             }
         }
     }
