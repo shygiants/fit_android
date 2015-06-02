@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -83,7 +85,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ((ImageView)view.findViewById(R.id.fashionImg)).setImageBitmap(image);
+        ((ImageView) view.findViewById(R.id.fashionImg)).setImageBitmap(image);
 
         rateButtons = new ImageButton[3];
         rateButtons[0] = (ImageButton)view.findViewById(R.id.button01);
@@ -232,7 +234,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 }
 
                 for (int i = 0; i < 3; i++)
-                    rateButtons[i].setAlpha((i + 1 == fashion.getRate())? RATED : NOT_RATED);
+                    rateButtons[i].setSelected(i + 1 == fashion.getRate());
 
                 int size = comments.length();
                 for (int i = 0; i < size; i++)
@@ -341,8 +343,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 String success = response.getString("success");
                 if (success.equals("true")) {
                     for (int i = 0; i < 3; i++)
-                        rateButtons[i].setAlpha(NOT_RATED);
-                    buttonClicked.setAlpha(RATED);
+                        rateButtons[i].setSelected(false);
+                    buttonClicked.setSelected(true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

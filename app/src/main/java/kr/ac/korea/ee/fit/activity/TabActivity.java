@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
@@ -31,7 +32,7 @@ public class TabActivity extends FragmentActivity {
         tabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
         TabWidget tabWidget = tabHost.getTabWidget();
-        tabWidget.setBackgroundColor(0xFFE0E0E0);
+        tabWidget.setBackgroundColor(getResources().getColor(R.color.app_bar));
         tabWidget.setDividerDrawable(null);
 
         Bundle arg_feed = new Bundle();
@@ -44,13 +45,14 @@ public class TabActivity extends FragmentActivity {
         tabHost.addTab(tabHost.newTabSpec("feed").setIndicator("", getDrawable(R.drawable.tab_feed)), TabFragment.class, arg_feed);
         tabHost.addTab(tabHost.newTabSpec("search").setIndicator("", getDrawable(R.drawable.tab_search)), TabFragment.class, arg_search);
         tabHost.addTab(tabHost.newTabSpec("user").setIndicator("", getDrawable(R.drawable.tab_user)), TabFragment.class, arg_user);
+
+        int count = tabWidget.getChildCount();
+        for (int i = 0; i < count; i++)
+            tabWidget.getChildAt(i).getLayoutParams().height *= 4.0 / 5.0;
     }
 
     @Override
     public void onBackPressed() {
-//        FragmentManager tabFragmentManager =
-//                getSupportFragmentManager().getFragments().get(tabHost.getCurrentTab()).getChildFragmentManager();
-
         FragmentManager tabFragmentManager = getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager();
         if (tabFragmentManager.getBackStackEntryCount() > 0)
             tabFragmentManager.popBackStack();

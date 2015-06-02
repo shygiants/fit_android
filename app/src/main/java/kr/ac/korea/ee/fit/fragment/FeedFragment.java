@@ -111,8 +111,6 @@ public class FeedFragment extends android.support.v4.app.Fragment {
     private class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {
 
         public class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            static final float RATED = (float)1.0;
-            static final float NOT_RATED = (float)0.26;
 
             ImageView fashionImg;
             TextView editorName;
@@ -146,7 +144,7 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                 int ratingType = fashionCard.getRatingType();
 
                 for (int i = 0; i < 3; i++) {
-                    button[i].setAlpha((i + 1 == ratingType)? RATED : NOT_RATED);
+                    button[i].setSelected(i + 1 == ratingType);
                     button[i].setOnClickListener(this);
                 }
                 editorName.setText(fashionCard.getEditorName() + "님이 작성");
@@ -187,8 +185,8 @@ public class FeedFragment extends android.support.v4.app.Fragment {
                         String success = response.getString("success");
                         if (success.equals("true")) {
                             for (int i = 0; i < 3; i++)
-                                button[i].setAlpha(NOT_RATED);
-                            buttonClicked.setAlpha(RATED);
+                                button[i].setSelected(false);
+                            buttonClicked.setSelected(true);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
