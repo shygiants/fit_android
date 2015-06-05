@@ -83,13 +83,15 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         dialog.setTitle("네트워크 체크");
         dialog.setIndeterminate(true);
         dialog.setCancelable(false);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ((ImageView) view.findViewById(R.id.fashionImg)).setImageBitmap(image);
+        ImageView fashionImg = (ImageView) view.findViewById(R.id.fashionImg);
+        fashionImg.setImageBitmap(image);
 
         rateButtons = new ImageButton[3];
         rateButtons[0] = (ImageButton)view.findViewById(R.id.button01);

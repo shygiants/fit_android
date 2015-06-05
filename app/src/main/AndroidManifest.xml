@@ -30,6 +30,9 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".activity.TabActivity"/>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".activity.ProfileActivity"/>
     </application>
 
 </manifest>

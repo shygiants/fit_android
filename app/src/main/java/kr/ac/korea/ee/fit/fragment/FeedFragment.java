@@ -1,16 +1,31 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,9 +128,10 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         detailFragment.setArguments(arg);
 
         fragmentManager.beginTransaction()
-                    .replace(R.id.tabContainer, detailFragment)
-                    .addToBackStack(null)
-                    .commit();
+                .replace(R.id.tabContainer, detailFragment)
+                .addToBackStack(null)
+                .commit();
+        fragmentManager.executePendingTransactions();
     }
 
     @Override

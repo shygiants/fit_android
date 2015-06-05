@@ -6,7 +6,7 @@
     <string name="title_activity_signIn">로그인</string>
     <string name="title_activity_signUp">회원가입</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile">프로필 수정</string>
+    <string name="logout">로그아웃</string>
 
 </resources>

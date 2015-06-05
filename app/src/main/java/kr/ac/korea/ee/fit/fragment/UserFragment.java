@@ -1,6 +1,9 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,14 +16,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cocosw.bottomsheet.BottomSheet;
 
 import org.json.JSONObject;
 
+import kr.ac.korea.ee.fit.Authenticator;
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.activity.MainActivity;
+import kr.ac.korea.ee.fit.activity.ProfileActivity;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.model.User;
 import kr.ac.korea.ee.fit.request.Event;
-import kr.ac.korea.ee.fit.request.GetUserData;
+import kr.ac.korea.ee.fit.request.UserData;
 
 /**
  * Created by SHYBook_Air on 15. 5. 28..
@@ -28,6 +37,8 @@ import kr.ac.korea.ee.fit.request.GetUserData;
 public class UserFragment extends Fragment implements View.OnClickListener {
 
     public static final String USER_ID = "USER ID";
+    public static final String NICKNAME = "NICKNAME";
+    public static final int PROFILE = 1;
 
     User user;
     boolean isDeviceUser;
@@ -59,7 +70,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
         else {
             UserGetterTask getter = new UserGetterTask();
-            getter.start(new GetUserData(userId));
+            getter.start(UserData.getUserData(userId));
         }
 
         dialog = new ProgressDialog(getActivity());
@@ -91,16 +102,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         collectionList.setLayoutManager(gridLayoutManager);
 
         if (isDeviceUser || user != null) {
-            nickNameText.setText(user.getNickName());
-            nameText.setText(user.getName());
-            ratingText.setText(String.valueOf(user.getRating()));
-            followerText.setText(String.valueOf(user.getFollower()));
-            followingText.setText(String.valueOf(user.getFollowing()));
+            setView();
             collectionList.setAdapter(collectionAdapter);
 
             if (isDeviceUser) {
                 followOrEdit.setSelected(false);
-                followOrEdit.setText("프로필 편집");
+                followOrEdit.setText("설정");
                 followOrEdit.setTextColor(getResources().getColor(R.color.accent));
             }
             else {
@@ -113,12 +120,52 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    public void setView() {
+        nickNameText.setText(user.getNickName());
+        nameText.setText(user.getName());
+        ratingText.setText(String.valueOf(user.getRating()));
+        followerText.setText(String.valueOf(user.getFollower()));
+        followingText.setText(String.valueOf(user.getFollowing()));
+    }
+
     @Override
     public void onClick(View view) {
         if (!isDeviceUser) {
             dialog.show();
             FollowTask followTask = new FollowTask();
             followTask.start(Event.follow(user.getEmail()));
+        }
+        else {
+            new BottomSheet.Builder(getActivity()).title("설정").sheet(R.menu.bottom_sheet)
+                    .listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.profile:
+                                    Intent editProfile = new Intent(getActivity(), ProfileActivity.class);
+                                    getActivity().startActivityForResult(editProfile, PROFILE);
+                                    break;
+                                case R.id.logout:
+                                    Authenticator.deleteAccount(getActivity());
+                                    Intent logout = new Intent(getActivity(), MainActivity.class);
+                                    startActivity(logout);
+                                    getActivity().finish();
+                                    break;
+                            }
+                        }
+            }).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PROFILE && resultCode == Activity.RESULT_OK) {
+            dialog.show();
+            String nickName = data.getStringExtra(NICKNAME);
+            UpdateNickName updateNickName = new UpdateNickName(nickName);
+            updateNickName.start(UserData.updateNickName(nickName));
         }
     }
 
@@ -178,15 +225,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private class UserGetterTask extends HTTPClient<GetUserData> {
+    private class UserGetterTask extends HTTPClient<UserData> {
         @Override
         protected void onPostExecute(JSONObject result) {
             user = new User(result);
-            nickNameText.setText(user.getNickName());
-            nameText.setText(user.getName());
-            ratingText.setText(String.valueOf(user.getRating()));
-            followerText.setText(String.valueOf(user.getFollower()));
-            followingText.setText(String.valueOf(user.getFollowing()));
+            setView();
             collectionAdapter = new CollectionAdapter();
             collectionList.setAdapter(collectionAdapter);
 
@@ -206,6 +249,32 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 followOrEdit.setSelected(isFollowing);
                 followOrEdit.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
                 followOrEdit.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dialog.dismiss();
+            }
+        }
+    }
+
+    private class UpdateNickName extends HTTPClient<UserData> {
+
+        String nickName;
+
+        public UpdateNickName(String nickName) {
+            super();
+
+            this.nickName = nickName;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                if (result.getBoolean("success")) {
+                    user.updateNickName(nickName);
+                    setView();
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

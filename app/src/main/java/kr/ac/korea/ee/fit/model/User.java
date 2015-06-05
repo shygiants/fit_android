@@ -1,14 +1,11 @@
 package kr.ac.korea.ee.fit.model;
 
 import android.graphics.Bitmap;
-import android.support.v4.app.Fragment;
-import android.widget.ImageView;
 
 import org.json.JSONObject;
 
 import kr.ac.korea.ee.fit.client.HTTPClient;
-import kr.ac.korea.ee.fit.fragment.UserFragment;
-import kr.ac.korea.ee.fit.request.GetUserData;
+import kr.ac.korea.ee.fit.request.UserData;
 
 /**
  * Created by SHYBook_Air on 15. 5. 4..
@@ -68,7 +65,7 @@ public class User {
 
     void getUserData() {
         UserGetterTask getter = new UserGetterTask();
-        getter.start(new GetUserData(email));
+        getter.start(UserData.getUserData(email));
     }
 
     public String getEmail() {
@@ -97,7 +94,11 @@ public class User {
 
     public boolean isFollowing() { return isFollowing; }
 
-    private class UserGetterTask extends HTTPClient<GetUserData> {
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    private class UserGetterTask extends HTTPClient<UserData> {
         @Override
         protected void onPostExecute(JSONObject result) {
             try {

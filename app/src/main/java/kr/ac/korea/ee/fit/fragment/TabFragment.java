@@ -21,6 +21,7 @@ public class TabFragment extends Fragment {
     public static final String USER = "USER";
 
     Fragment contentFragment;
+    String tag;
     boolean firstTime = true;
 
     @Override
@@ -28,6 +29,7 @@ public class TabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle arguments = getArguments();
         String tabContent = arguments.getString(TAB_CONTENT);
+        tag = tabContent;
 
         Bundle arg = new Bundle();
         switch (tabContent) {
@@ -53,7 +55,7 @@ public class TabFragment extends Fragment {
 
         if (firstTime) {
             getChildFragmentManager().beginTransaction()
-                    .add(R.id.tabContainer, contentFragment)
+                    .add(R.id.tabContainer, contentFragment, tag)
                     .commit();
             firstTime = false;
         }
