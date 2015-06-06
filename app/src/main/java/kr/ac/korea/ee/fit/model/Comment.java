@@ -37,7 +37,7 @@ public class Comment {
     }
 
     public Comment(int fashion_id, String comment) {
-        // TODO: add user's info
+        // TODO: add comment id
         userId = User.getDeviceUserId();
         nickname = User.getDeviceUser().getNickName();
         this.comment = comment;

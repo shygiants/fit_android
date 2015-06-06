@@ -62,7 +62,7 @@ public class TabActivity extends FragmentActivity implements View.OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == UserFragment.PROFILE) {
+        if (requestCode == UserFragment.PROFILE || requestCode == UserFragment.COLLECTION) {
             Fragment target = getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager().findFragmentByTag(TabFragment.USER);
             target.onActivityResult(requestCode, resultCode, data);
         }

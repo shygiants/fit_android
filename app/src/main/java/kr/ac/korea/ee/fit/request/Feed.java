@@ -80,8 +80,14 @@ public class Feed extends PostData {
             return getRated(user_id);
         }
 
-        // TODO: getting collection
-        return null;
+        Feed getCollection = new Feed();
+
+        getCollection.url = "http://" + ipAddress + "/feed/getCollection";
+
+        getCollection.add("user_id", user_id);
+        getCollection.add("collection_id", collection_id);
+
+        return getCollection;
     }
 
     public static Feed getDetail(int fashion_id) {

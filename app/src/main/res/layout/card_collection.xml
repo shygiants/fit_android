@@ -5,26 +5,25 @@
     android:id="@+id/card_view"
     android:layout_gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="@dimen/card_elevation"
     android:layout_margin="6dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <ImageView
             android:src="@mipmap/ic_launcher"
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"/>
 
         <TextView
             android:gravity="right"
-            android:text="editor name"
             android:textColor="#212121"
             android:id="@+id/collectionTitle"
             android:padding="16dp"

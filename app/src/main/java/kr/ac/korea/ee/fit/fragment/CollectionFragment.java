@@ -3,6 +3,7 @@ package kr.ac.korea.ee.fit.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,13 @@ public class CollectionFragment extends Fragment {
 
     public static final String COLLECTION_ID = "COLLECTION ID";
     public static final String USER_ID = "USER ID";
+    public static final String NAME = "NAME";
+    public static final String DESC = "DESCRIPTION";
 
     int collection_id;
     String user_id;
+    String name;
+    String desc;
     boolean firstTime = true;
 
     FeedFragment collection;
@@ -33,6 +38,8 @@ public class CollectionFragment extends Fragment {
         Bundle args = getArguments();
         collection_id = args.getInt(COLLECTION_ID);
         user_id = args.getString(USER_ID);
+        name = args.getString(NAME);
+        desc = args.getString(DESC);
 
         collection = new FeedFragment();
         Bundle arg = new Bundle();
@@ -48,8 +55,10 @@ public class CollectionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_collection, container, false);
 
         collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
-        if (collection_id == 0)
-            collectionTitle.setText("좋아하는 패션");
+        collectionTitle.setText(name);
+
+        Log.i("CollectionFragment", desc);
+
         view.findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
