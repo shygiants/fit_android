@@ -16,7 +16,6 @@
         android:orientation="vertical">
 
         <ImageView
-            android:src="@mipmap/ic_launcher"
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -49,7 +49,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     // views
     ImageButton[] rateButtons;
     TextView editorName;
-    TextView srcLink;
+    TextView vendorName;
     Button followButton;
     RecyclerView commentList;
     EditText writeComment;
@@ -92,6 +92,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
         ImageView fashionImg = (ImageView) view.findViewById(R.id.fashionImg);
         fashionImg.setImageBitmap(image);
+        fashionImg.setOnClickListener(this);
 
         rateButtons = new ImageButton[3];
         rateButtons[0] = (ImageButton)view.findViewById(R.id.button01);
@@ -103,12 +104,13 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         // editor card
         editorName = (TextView)view.findViewById(R.id.editorName);
         editorName.setOnClickListener(this);
-        srcLink = (TextView)view.findViewById(R.id.srcLink);
+        vendorName = (TextView)view.findViewById(R.id.vendorName);
         followButton = (Button)view.findViewById(R.id.follow);
         followButton.setOnClickListener(this);
         if (fashion != null) {
-            editorName.setText(fashion.getEditorName());
-            srcLink.setText(fashion.getSrcLink());
+            String nickname = fashion.getNickname();
+            editorName.setText((nickname.equals("null"))? fashion.getEditorName() : nickname);
+            vendorName.setText(fashion.getVendorName());
 
             if (fashion.getEditorId().equals(User.getDeviceUserId()))
                 followButton.setVisibility(View.INVISIBLE);
@@ -206,6 +208,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 FollowTask followTask = new FollowTask();
                 followTask.start(Event.follow(fashion.getEditorId()));
                 return;
+            case R.id.fashionImg:
+                // TODO: move to src link
+                return;
             default:
                 ratingType = 0;
                 break;
@@ -229,8 +234,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 JSONArray comments = response.getJSONArray("comments");
                 fashion = new Fashion(response.getJSONObject("fashion"));
 
-                editorName.setText(fashion.getEditorName());
-                srcLink.setText("출처 - " + fashion.getSrcLink());
+                String nickname = fashion.getNickname();
+                editorName.setText((nickname.equals("null"))? fashion.getEditorName() : nickname);
+                vendorName.setText(fashion.getVendorName());
 
                 if (fashion.getEditorId().equals(User.getDeviceUserId()))
                     followButton.setVisibility(View.INVISIBLE);

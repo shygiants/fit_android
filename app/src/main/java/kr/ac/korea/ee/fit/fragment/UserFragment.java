@@ -141,7 +141,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setView() {
-        nickNameText.setText(user.getNickName());
+        String nickname = user.getNickName();
+        nickNameText.setText((nickname.equals("null"))? user.getName() : user.getNickName());
         nameText.setText(user.getName());
         ratingText.setText(String.valueOf(user.getRating()));
         followerText.setText(String.valueOf(user.getFollower()));
@@ -225,7 +226,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 if (tn != null)
                     thumbnail.setImageBitmap(tn);
                 else
-                    thumbnail.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+                    thumbnail.setImageDrawable(getResources().getDrawable(R.mipmap.bg_collection_not_inserted));
             }
 
             @Override

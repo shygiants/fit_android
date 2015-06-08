@@ -61,11 +61,11 @@
 
                 <kr.ac.korea.ee.fit.core.CircleImageView
                     android:id="@+id/editor"
-                    android:src="@mipmap/ic_launcher"
+                    android:src="@mipmap/ic_person_black_48dp"
                     android:layout_width="65dp"
                     android:layout_height="65dp"
                     android:layout_gravity="center_vertical"
-                    android:padding="4dp"/>
+                    android:layout_margin="4dp"/>
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -83,7 +83,7 @@
                         android:textColor="#000"
                         android:alpha="0.87"/>
                     <TextView
-                        android:id="@+id/srcLink"
+                        android:id="@+id/vendorName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="4dp"

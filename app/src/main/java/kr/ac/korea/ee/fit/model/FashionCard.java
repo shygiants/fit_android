@@ -12,6 +12,8 @@ public class FashionCard {
 
     int fashionId;
     String editorName;
+    String nickname;
+    String vendorName;
     String imgPath;
     Bitmap image;
     int ratingType;
@@ -26,6 +28,8 @@ public class FashionCard {
         try {
             fashionId = jsonObject.getInt("id");
             editorName = jsonObject.getString("last_name") + jsonObject.getString("first_name");
+            nickname = jsonObject.getString("nick_name");
+            vendorName = jsonObject.getString("vendor_name");
             imgPath = jsonObject.getString("img_path");
             String ratingStr = jsonObject.getString("type_id");
 
@@ -61,9 +65,13 @@ public class FashionCard {
         return editorName;
     }
 
+    public String getNickname() { return nickname; }
+
     public String getImgPath() {
         return imgPath;
     }
 
     public int getRatingType() { return ratingType; }
+
+    public String getVendorName() { return vendorName; }
 }

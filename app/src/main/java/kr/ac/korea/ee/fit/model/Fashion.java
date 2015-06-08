@@ -15,7 +15,9 @@ public class Fashion {
     String srcLink;
     String gender;
     String editorName;
+    String nickname;
     String editorId;
+    String vendorName;
     String season;
     String style;
     String age;
@@ -28,7 +30,9 @@ public class Fashion {
             srcLink = fashion.getString("src_link");
             gender = fashion.getString("gender_label");
             editorName = fashion.getString("last_name") + fashion.getString("first_name");
+            nickname = fashion.getString("nick_name");
             editorId = fashion.getString("email");
+            vendorName = fashion.getString("vendor_name");
             season = fashion.getString("season_label");
             style = fashion.getString("style_label");
             age = fashion.getString("age_label");
@@ -55,4 +59,8 @@ public class Fashion {
     }
 
     public boolean getFollowing() { return following; }
+
+    public String getNickname() { return nickname; }
+
+    public String getVendorName() { return vendorName; }
 }

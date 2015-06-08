@@ -149,6 +149,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
             ImageView fashionImg;
             TextView editorName;
+            TextView vendor;
             ImageButton[] button;
             View cardView;
             int fashionId;
@@ -158,6 +159,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 cardView = view;
                 fashionImg = (ImageView)view.findViewById(R.id.fashionImg);
                 editorName = (TextView)view.findViewById(R.id.editorName);
+                vendor = (TextView)view.findViewById(R.id.vendor);
                 button = new ImageButton[3];
                 button[0] = (ImageButton)view.findViewById(R.id.button1);
                 button[1] = (ImageButton)view.findViewById(R.id.button2);
@@ -182,7 +184,9 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     button[i].setSelected(i + 1 == ratingType);
                     button[i].setOnClickListener(this);
                 }
-                editorName.setText(fashionCard.getEditorName() + "님이 작성");
+                String nickname = fashionCard.getNickname();
+                editorName.setText((nickname.equals("null"))? fashionCard.getEditorName() : nickname);
+                vendor.setText(fashionCard.getVendorName());
             }
 
             @Override
@@ -246,10 +250,10 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     feed = Feed.getCollection(collection_id, user_id);
                     break;
                 case SEARCH:
-                    feed = Feed.getRecommended();
+                    feed = Feed.getFeed();
                     break;
                 default:
-                    feed = Feed.getFeed();
+                    feed = Feed.getRecommended();
             }
 
             FeedTask feeder = new FeedTask();
