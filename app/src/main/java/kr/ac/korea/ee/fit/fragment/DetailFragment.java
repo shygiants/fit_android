@@ -2,8 +2,12 @@ package kr.ac.korea.ee.fit.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,17 +23,26 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cocosw.bottomsheet.BottomSheet;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
+import kr.ac.korea.ee.fit.Authenticator;
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.activity.MainActivity;
+import kr.ac.korea.ee.fit.activity.ProfileActivity;
 import kr.ac.korea.ee.fit.client.HTTPClient;
 import kr.ac.korea.ee.fit.core.MyLinearLayoutManager;
+import kr.ac.korea.ee.fit.model.Collection;
 import kr.ac.korea.ee.fit.model.Fashion;
 import kr.ac.korea.ee.fit.model.Comment;
 import kr.ac.korea.ee.fit.model.User;
+import kr.ac.korea.ee.fit.request.CollectionData;
 import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.Feed;
 
@@ -93,6 +106,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         ImageView fashionImg = (ImageView) view.findViewById(R.id.fashionImg);
         fashionImg.setImageBitmap(image);
         fashionImg.setOnClickListener(this);
+
+        Button collectButton = (Button)view.findViewById(R.id.collect);
+        collectButton.setOnClickListener(this);
 
         rateButtons = new ImageButton[3];
         rateButtons[0] = (ImageButton)view.findViewById(R.id.button01);
@@ -210,6 +226,11 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 return;
             case R.id.fashionImg:
                 // TODO: move to src link
+                return;
+            case R.id.collect:
+                dialog.show();
+                GetCollections getCollections = new GetCollections();
+                getCollections.start(CollectionData.getCollections(User.getDeviceUserId()));
                 return;
             default:
                 ratingType = 0;
@@ -381,10 +402,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(JSONObject result) {
             try {
-                if (result.getBoolean("success")) {
-                    writeComment.setText("");
-                    commentListAdapter.addComment(comment);
-                }
+                comment.setId(result.getInt("comment_id"));
+                writeComment.setText("");
+                commentListAdapter.addComment(comment);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -433,6 +453,51 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             } finally {
                 dialog.dismiss();
             }
+        }
+    }
+
+    private class GetCollections extends HTTPClient<CollectionData> {
+
+        ArrayList<Collection> collections = new ArrayList<>();
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                int position;
+                JSONArray collections_json = result.getJSONArray("collections");
+
+                int arraySize = collections_json.length();
+                for (position = 0; position < arraySize; position++) {
+                    Collection collection = new Collection(collections_json.getJSONObject(position));
+//                    String path = collection.getThumbnailPath();
+//                    Bitmap thumbnail = null;
+//                    if (path != null) {
+//                        Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(path).getContent());
+//                        thumbnail = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+//                    }
+//                    collection.setThumbnail(thumbnail);
+                    collections.add(collection);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // TODO: Exception
+            }
+
+            BottomSheet.Builder bottomSheetBuilder = new BottomSheet.Builder(getActivity());
+            bottomSheetBuilder.title("컬렉션에 담기");
+            for (Collection collection : collections) {
+                bottomSheetBuilder.sheet(collection.getCollectionId(), collection.getCollectionName());
+            }
+            bottomSheetBuilder.listener(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+
+                    }
+                }
+            }).show();
+
+            dialog.dismiss();
         }
     }
 }

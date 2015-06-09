@@ -37,13 +37,14 @@ public class Comment {
     }
 
     public Comment(int fashion_id, String comment) {
-        // TODO: add comment id
         userId = User.getDeviceUserId();
         nickname = User.getDeviceUser().getNickName();
         this.comment = comment;
         created = "방금";
         fashionId = fashion_id;
     }
+
+    public void setId(int id) { this.id = id; }
 
     public Bitmap getProfile() {
         return profile;
