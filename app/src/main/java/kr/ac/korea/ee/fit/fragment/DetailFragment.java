@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cocosw.bottomsheet.BottomSheet;
 
@@ -228,6 +231,16 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 // TODO: move to src link
                 return;
             case R.id.collect:
+                if (fashion.getRateId() == 0) {
+                    // TODO: rate first
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("컬렉션에 담기 전에 먼저 평가부터 해주세요")
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).show();
+                    return;
+                }
                 dialog.show();
                 GetCollections getCollections = new GetCollections();
                 getCollections.start(CollectionData.getCollections(User.getDeviceUserId()));
@@ -486,18 +499,34 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             BottomSheet.Builder bottomSheetBuilder = new BottomSheet.Builder(getActivity());
             bottomSheetBuilder.title("컬렉션에 담기");
             for (Collection collection : collections) {
-                bottomSheetBuilder.sheet(collection.getCollectionId(), collection.getCollectionName());
+                if (collection.getCollectionId() != 0)
+                    bottomSheetBuilder.sheet(collection.getCollectionId(), collection.getCollectionName());
             }
             bottomSheetBuilder.listener(new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-
-                    }
+                public void onClick(DialogInterface _dialog, int which) {
+                    dialog.show();
+                    new Collect().start(Event.collect(fashion.getRateId(), which));
                 }
             }).show();
 
             dialog.dismiss();
+        }
+    }
+
+    private class Collect extends HTTPClient<Event> {
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                if (result.getBoolean("success")) {
+                    dialog.dismiss();
+                    Toast.makeText(getActivity(), "컬렉션에 추가되었습니다", Toast.LENGTH_LONG).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

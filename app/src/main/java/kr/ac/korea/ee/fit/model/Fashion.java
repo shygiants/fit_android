@@ -23,6 +23,7 @@ public class Fashion {
     String age;
     String createDate;
     int rate;
+    int rateId;
     boolean following;
 
     public Fashion(JSONObject fashion) {
@@ -38,6 +39,8 @@ public class Fashion {
             age = fashion.getString("age_label");
             createDate = fashion.getString("created_date");
             rate = fashion.getInt("type_id");
+            rateId = fashion.getInt("rate_id");
+
             following = fashion.getString("follower_id").equals(User.getDeviceUserId());
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,6 +55,10 @@ public class Fashion {
 
     public int getRate() {
         return rate;
+    }
+
+    public int getRateId() {
+        return rateId;
     }
 
     public String getSrcLink() {

@@ -60,6 +60,17 @@ public class Event extends PostData {
         return likeComment;
     }
 
+    public static Event collect(int rateId, int collectionId) {
+        Event collect = new Event();
+
+        collect.url = "http://" + ipAddress + "/eventServer/collect";
+
+        collect.add("event_id", rateId);
+        collect.add("collection_id", collectionId);
+
+        return collect;
+    }
+
     @Override
     public String getURL() {
         return url;
