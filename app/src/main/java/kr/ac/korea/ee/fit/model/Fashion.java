@@ -61,6 +61,10 @@ public class Fashion {
         return rateId;
     }
 
+    public void setRateId(int rateId) {
+        this.rateId = rateId;
+    }
+
     public String getSrcLink() {
         return srcLink;
     }

@@ -222,8 +222,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 @Override
                 protected void onPostExecute(JSONObject response) {
                     try {
-                        String success = response.getString("success");
-                        if (success.equals("true")) {
+                        if (response.getBoolean("success")) {
                             for (int i = 0; i < 3; i++)
                                 button[i].setSelected(false);
                             buttonClicked.setSelected(true);

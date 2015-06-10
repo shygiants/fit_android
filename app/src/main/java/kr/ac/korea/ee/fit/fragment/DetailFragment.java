@@ -389,8 +389,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(JSONObject response) {
             try {
-                String success = response.getString("success");
-                if (success.equals("true")) {
+                if (response.getBoolean("success")) {
+                    fashion.setRateId(response.getInt("insert_id"));
                     for (int i = 0; i < 3; i++)
                         rateButtons[i].setSelected(false);
                     buttonClicked.setSelected(true);
