@@ -201,6 +201,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
         public void addComment(Comment comment) {
             comments.add(comment);
+            writeComment.setText("");
             notifyDataSetChanged();
         }
     }
@@ -216,8 +217,8 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(JSONObject result) {
             try {
-                if (result.getBoolean("success"))
-                    adapter.addComment(comment);
+                comment.setId(result.getInt("comment_id"));
+                adapter.addComment(comment);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
