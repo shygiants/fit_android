@@ -2,6 +2,7 @@ package kr.ac.korea.ee.fit.request;
 
 import android.util.Log;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,6 +16,8 @@ import kr.ac.korea.ee.fit.model.User;
  * Created by SHYBook_Air on 15. 4. 15..
  */
 public class Feed extends PostData {
+
+    public static final int LIMIT = 5;
 
     String url;
 
@@ -110,6 +113,24 @@ public class Feed extends PostData {
         getComments.add("user_id", User.getDeviceUserId());
 
         return getComments;
+    }
+
+    public void setPage(int page) {
+
+        ArrayList<NameValuePair> buffer = new ArrayList<>();
+
+        for (NameValuePair pair : data) {
+            String name = pair.getName();
+            if (name.equals("offset") || name.equals("limit"))
+                buffer.add(pair);
+        }
+
+        for (NameValuePair pair : buffer) {
+            data.remove(pair);
+        }
+
+        add("offset", LIMIT * page);
+        add("limit", LIMIT);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -61,11 +62,13 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
     public static final String DETAIL = "DETAIL";
 
     FashionCardAdapter fashionCardAdapter;
+    StaggeredGridLayoutManager fashionFeedLayoutManager;
 
     FragmentManager fragmentManager;
     String context;
     int collection_id;
     String user_id;
+    boolean moreExists = true;
 
     ProgressDialog dialog;
     SwipeRefreshLayout swipe;
@@ -111,11 +114,34 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         Configuration config = getResources().getConfiguration();
         boolean isLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
                 Configuration.SCREENLAYOUT_SIZE_LARGE;
-        StaggeredGridLayoutManager fashionFeedLayoutManager =
+        fashionFeedLayoutManager =
                 new StaggeredGridLayoutManager((isLarge) ? 3 : 2, StaggeredGridLayoutManager.VERTICAL);
 
         cardList.setLayoutManager(fashionFeedLayoutManager);
         cardList.setAdapter(fashionCardAdapter);
+        cardList.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int visibleItemCount = fashionFeedLayoutManager.getChildCount();
+                int totalItemCount = fashionFeedLayoutManager.getItemCount();
+                int[] pastVisibleItems = new int[fashionFeedLayoutManager.getSpanCount()];
+                fashionFeedLayoutManager.findFirstVisibleItemPositions(pastVisibleItems);
+
+                if (moreExists) {
+                    int totalPastVisibleItems = 0;
+                    for (int count : pastVisibleItems) {
+                        totalPastVisibleItems += count;
+                    }
+                    if (visibleItemCount + totalPastVisibleItems >= totalItemCount) {
+                        moreExists = false;
+                        Log.i("FeedFragment", "loadMore()");
+                        fashionCardAdapter.loadMore();
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -174,7 +200,6 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                         startDetailView(fashionCard);
                     }
                 });
-
                 fashionImg.setImageBitmap(fashionCard.getImage());
                 fashionId = fashionCard.getFashionId();
 
@@ -240,6 +265,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         ArrayList<FashionCard> cards;
         String[] ratingTypes;
         Feed feed;
+        int page = 0;
 
         public FashionCardAdapter() {
             cards = new ArrayList<>();
@@ -254,26 +280,48 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 default:
                     feed = Feed.getRecommended();
             }
+            feed.setPage(0);
 
             FeedTask feeder = new FeedTask();
             feeder.start(feed);
         }
 
-        public void refresh(Feed getFiltered) {
+        public void clearCards() {
+            for (FashionCard card : cards)
+                card.getImage().recycle();
             cards.clear();
+        }
+
+        public void refresh(Feed getFiltered) {
+            clearCards();
             notifyDataSetChanged();
 
             feed = getFiltered;
+            page = 0;
+            feed.setPage(page);
             FeedTask feeder = new FeedTask();
             feeder.start(getFiltered);
         }
 
         public void refresh() {
-            cards.clear();
+            clearCards();
             notifyDataSetChanged();
 
+            page = 0;
+            feed.setPage(page);
             FeedTask feeder = new FeedTask();
             feeder.start(feed);
+        }
+
+        public void loadMore() {
+            page++;
+            feed.setPage(page);
+            new FeedTask().start(feed);
+        }
+
+        public void addCard(FashionCard card) {
+            cards.add(card);
+            notifyItemInserted(cards.size() - 1);
         }
 
         @Override
@@ -319,7 +367,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
         private class ParsingTask extends AsyncTask<JSONObject, FashionCard, Void> {
 
-            int position;
+            int get;
 
             @Override
             protected void onPreExecute() { super.onPreExecute(); }
@@ -329,11 +377,11 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 JSONObject response = params[0];
 
                 try {
-                    Log.i("json", response.toString());
                     JSONArray cards = response.getJSONArray("cards");
 
                     int arraySize = cards.length();
-                    for (position = 0; position < arraySize; position++) {
+                    get = arraySize;
+                    for (int position = 0; position < arraySize; position++) {
                         FashionCard card = new FashionCard(cards.getJSONObject(position));
                         Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(card.getImgPath()).getContent());
                         card.setImage(bitmap);
@@ -349,13 +397,14 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
             @Override
             protected void onProgressUpdate(FashionCard... values) {
-                cards.add(values[0]);
-                notifyItemInserted(position);
+                addCard(values[0]);
             }
 
             @Override
             protected void onPostExecute(Void result) {
                 swipe.setRefreshing(false);
+                if (get == Feed.LIMIT)
+                    moreExists = true;
             }
         }
     }
