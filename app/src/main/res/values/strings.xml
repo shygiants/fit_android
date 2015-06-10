@@ -9,4 +9,6 @@
     <string name="profile">프로필 수정</string>
     <string name="logout">로그아웃</string>
 
+    <string name="add_collection">새 컬렉션 만들어서 담기</string>
+
 </resources>

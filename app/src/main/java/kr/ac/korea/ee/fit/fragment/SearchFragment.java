@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -92,7 +93,7 @@ public class SearchFragment extends Fragment {
 
         public class FilterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            TextView filterText;
+            Button filterText;
 
             Filter filter;
             int position;
@@ -101,7 +102,7 @@ public class SearchFragment extends Fragment {
                 super(view);
                 view.setOnClickListener(this);
 
-                filterText = (TextView)view.findViewById(R.id.filterText);
+                filterText = (Button)view.findViewById(R.id.filterText);
             }
 
             public void setView(int position) {

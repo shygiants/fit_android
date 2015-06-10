@@ -53,6 +53,8 @@ public class User {
     }
 
     public static User getDeviceUser() {
+        deviceUser.getUserData();
+
         return deviceUser;
     }
 

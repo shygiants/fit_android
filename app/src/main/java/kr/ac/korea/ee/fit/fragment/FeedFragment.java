@@ -9,24 +9,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.transition.AutoTransition;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -178,6 +164,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             ImageButton[] button;
             View cardView;
             int fashionId;
+            FashionCard fashionCard;
 
             public CardViewHolder(View view) {
                 super(view);
@@ -191,14 +178,10 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 button[2] = (ImageButton)view.findViewById(R.id.button3);
             }
 
-            public void setView(final FashionCard fashionCard, String[] ratingTypes) {
+            public void setView(FashionCard fashionCard, String[] ratingTypes) {
 
-                cardView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startDetailView(fashionCard);
-                    }
-                });
+                this.fashionCard = fashionCard;
+                cardView.setOnClickListener(this);
                 fashionImg.setImageBitmap(fashionCard.getImage());
                 fashionId = fashionCard.getFashionId();
 
@@ -227,21 +210,21 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                         ratingType = 3;
                         break;
                     default:
-                        ratingType = 0;
-                        break;
+                        startDetailView(fashionCard);
+                        return;
                 }
 
                 dialog.show();
-                RateTask rate = new RateTask((ImageButton)view);
+                RateTask rate = new RateTask(ratingType);
                 rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
             }
 
             class RateTask extends HTTPClient<Event> {
 
-                ImageButton buttonClicked;
+                int ratingType;
 
-                public RateTask(ImageButton buttonClicked) {
-                    this.buttonClicked = buttonClicked;
+                public RateTask(int ratingType) {
+                    this.ratingType = ratingType;
                 }
                 @Override
                 protected void onPostExecute(JSONObject response) {
@@ -249,7 +232,8 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                         if (response.getBoolean("success")) {
                             for (int i = 0; i < 3; i++)
                                 button[i].setSelected(false);
-                            buttonClicked.setSelected(true);
+                            button[ratingType - 1].setSelected(true);
+                            fashionCard.setRatingType(ratingType);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -289,11 +273,11 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             for (FashionCard card : cards)
                 card.getImage().recycle();
             cards.clear();
+            notifyDataSetChanged();
         }
 
         public void refresh(Feed getFiltered) {
             clearCards();
-            notifyDataSetChanged();
 
             feed = getFiltered;
             page = 0;
@@ -304,7 +288,6 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
         public void refresh() {
             clearCards();
-            notifyDataSetChanged();
 
             page = 0;
             feed.setPage(page);

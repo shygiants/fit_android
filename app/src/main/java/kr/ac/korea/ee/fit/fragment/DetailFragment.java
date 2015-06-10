@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -205,6 +206,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int ratingType;
+        AlertDialog.Builder builder;
         Bundle arg = new Bundle();
         switch (view.getId()) {
             case R.id.button01:
@@ -250,16 +252,22 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 followTask.start(Event.follow(fashion.getEditorId()));
                 return;
             case R.id.fashionImg:
-                // TODO: move to src link
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("사진의 출처로 이동합니다")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(fashion.getSrcLink()));
+                                        startActivity(intent);
+                                    }
+                                })
+                        .setNegativeButton("취소", null).show();
                 return;
             case R.id.collect:
                 if (fashion.getRateId() == 0) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage("컬렉션에 담기 전에 먼저 평가부터 해주세요")
-                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                }
-                            }).show();
+                            .setPositiveButton("확인", null).show();
                     return;
                 }
                 dialog.show();
@@ -519,7 +527,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             BottomSheet.Builder bottomSheetBuilder = new BottomSheet.Builder(getActivity());
             bottomSheetBuilder.title("컬렉션에 담기");
-            bottomSheetBuilder.sheet(0, "+ 새 컬렉션 만들기");
+            bottomSheetBuilder.sheet(0, R.drawable.ic_add_box_black_24dp, R.string.add_collection);
             for (Collection collection : collections) {
                 if (collection.getCollectionId() != 0)
                     bottomSheetBuilder.sheet(collection.getCollectionId(), collection.getCollectionName());
@@ -548,7 +556,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result.getBoolean("success")) {
-                    Toast.makeText(getActivity(), "컬렉션에 추가되었습니다", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "컬렉션에 담았습니다", Toast.LENGTH_LONG).show();
                 }
 
             } catch (Exception e) {

@@ -55,6 +55,10 @@ public class FashionCard {
 
     public void setImage(Bitmap image) { this.image = image; }
 
+    public void setRatingType(int ratingType) {
+        this.ratingType = ratingType;
+    }
+
     public Bitmap getImage() { return image; }
 
     public int getFashionId() {

@@ -23,7 +23,9 @@
 
         <TextView
             android:gravity="right"
-            android:textColor="#212121"
+            android:alpha="0.7"
+            android:textColor="#FFF"
+            android:textStyle="bold"
             android:id="@+id/collectionTitle"
             android:padding="16dp"
             android:layout_width="match_parent"

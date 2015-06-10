@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +50,7 @@ import kr.ac.korea.ee.fit.request.UserData;
 /**
  * Created by SHYBook_Air on 15. 5. 28..
  */
-public class UserFragment extends Fragment implements View.OnClickListener {
+public class UserFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String USER_ID = "USER ID";
     public static final String NICKNAME = "NICKNAME";
@@ -69,6 +70,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     TextView followingText;
 
     Button followOrEdit;
+
+    SwipeRefreshLayout swipe;
 
     RecyclerView collectionList;
     CollectionAdapter collectionAdapter;
@@ -103,6 +106,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
+
+        swipe = (SwipeRefreshLayout)view.findViewById(R.id.swipe);
+        swipe.setOnRefreshListener(this);
 
         nickNameText = (TextView)view.findViewById(R.id.nickName);
         nameText = (TextView)view.findViewById(R.id.name);
@@ -200,7 +206,18 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             }
     }
 
-
+    @Override
+    public void onRefresh() {
+        collectionAdapter.clearCollections();
+        if (isDeviceUser) {
+            user = User.getDeviceUser();
+            new GetCollections().start(CollectionData.getCollections(user.getEmail()));
+        }
+        else {
+            UserGetterTask getter = new UserGetterTask();
+            getter.start(UserData.getUserData(user.getEmail()));
+        }
+    }
 
     private class CollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -261,6 +278,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         ArrayList<Collection> collections = new ArrayList<>();
 
+        public void clearCollections() {
+            for (Collection collection : collections)
+                collection.getThumbnail().recycle();
+
+            collections.clear();
+            notifyDataSetChanged();
+        }
+
         public void addCollection(Collection collection) {
             collections.add(collection);
             notifyItemInserted(collections.size() - 1);
@@ -319,6 +344,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
             } finally {
                 dialog.dismiss();
+                swipe.setRefreshing(false);
             }
         }
     }
