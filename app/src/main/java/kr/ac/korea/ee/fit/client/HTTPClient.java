@@ -107,6 +107,7 @@ public class HTTPClient<T extends Request> extends AsyncTask<T, Void, JSONObject
             result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
         }
 
+        Log.i("Request", result.toString());
         return result.toString();
     }
 

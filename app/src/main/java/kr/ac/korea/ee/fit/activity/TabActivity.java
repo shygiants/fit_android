@@ -15,6 +15,7 @@ import android.widget.TabWidget;
 import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.fragment.DetailFragment;
 import kr.ac.korea.ee.fit.fragment.FeedFragment;
 import kr.ac.korea.ee.fit.fragment.SearchFragment;
 import kr.ac.korea.ee.fit.fragment.TabFragment;
@@ -62,10 +63,20 @@ public class TabActivity extends FragmentActivity implements View.OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == UserFragment.PROFILE || requestCode == UserFragment.COLLECTION) {
-            Fragment target = getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager().findFragmentByTag(TabFragment.USER);
-            target.onActivityResult(requestCode, resultCode, data);
+        Fragment target;
+        switch (requestCode) {
+            case UserFragment.PROFILE:
+            case UserFragment.COLLECTION:
+                target = getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager().findFragmentByTag(TabFragment.USER);
+                target.onActivityResult(requestCode, resultCode, data);
+                break;
+            case DetailFragment.COLLECTION:
+                FeedFragment feedFragment = (FeedFragment)getSupportFragmentManager().findFragmentByTag(tabHost.getCurrentTabTag()).getChildFragmentManager().findFragmentByTag(TabFragment.FEED);
+                target = feedFragment.fragmentManager.findFragmentByTag(FeedFragment.DETAIL);
+                target.onActivityResult(requestCode, resultCode, data);
+                break;
         }
+
     }
 
     @Override

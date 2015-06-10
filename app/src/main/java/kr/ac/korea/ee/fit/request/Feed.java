@@ -21,13 +21,8 @@ public class Feed extends PostData {
 
     String url;
 
-    static Feed feed;
-
     public static Feed getFeed() {
-        if (feed != null)
-            return feed;
-
-        feed = new Feed();
+        Feed feed = new Feed();
         feed.url = "http://" + ipAddress + "/feed/getAll";
         feed.add("email", User.getDeviceUserId());
         return feed;
@@ -74,6 +69,7 @@ public class Feed extends PostData {
         feed.url = "http://" + ipAddress + "/feed/getRated";
 
         feed.add("email", user_id);
+        feed.add("viewer", User.getDeviceUserId());
 
         return feed;
     }
@@ -87,7 +83,7 @@ public class Feed extends PostData {
 
         getCollection.url = "http://" + ipAddress + "/feed/getCollection";
 
-        getCollection.add("user_id", user_id);
+        getCollection.add("user_id", User.getDeviceUserId());
         getCollection.add("collection_id", collection_id);
 
         return getCollection;

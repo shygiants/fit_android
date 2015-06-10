@@ -1,5 +1,6 @@
 package kr.ac.korea.ee.fit.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.Authenticator;
 import kr.ac.korea.ee.fit.R;
+import kr.ac.korea.ee.fit.activity.CollectionActivity;
 import kr.ac.korea.ee.fit.activity.MainActivity;
 import kr.ac.korea.ee.fit.activity.ProfileActivity;
 import kr.ac.korea.ee.fit.client.HTTPClient;
@@ -48,6 +50,7 @@ import kr.ac.korea.ee.fit.model.User;
 import kr.ac.korea.ee.fit.request.CollectionData;
 import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.Feed;
+import kr.ac.korea.ee.fit.request.UserData;
 
 /**
  * Created by SHYBook_Air on 15. 5. 11..
@@ -56,6 +59,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
     public static final String FASHION_ID = "FashionID";
     public static final String IMAGE = "IMAGE";
+    public static final String NAME = "NAME";
+    public static final String DESC = "DESC";
+    public static final int COLLECTION = 3;
 
     // attributes
     int fashionId;
@@ -181,6 +187,22 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK)
+            switch (requestCode) {
+                case COLLECTION:
+                    dialog.show();
+                    String name = data.getStringExtra(NAME);
+                    String description = data.getStringExtra(DESC);
+                    MakeCollection makeCollection = new MakeCollection();
+                    makeCollection.start(CollectionData.makeCollection(name, description));
+                    break;
+            }
+    }
+
+    @Override
     public void onClick(View view) {
         int ratingType;
         Bundle arg = new Bundle();
@@ -232,7 +254,6 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 return;
             case R.id.collect:
                 if (fashion.getRateId() == 0) {
-                    // TODO: rate first
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage("컬렉션에 담기 전에 먼저 평가부터 해주세요")
                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -434,7 +455,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 boolean isFollowing = result.getBoolean("is_following");
                 followButton.setSelected(isFollowing);
                 followButton.setText((isFollowing) ? "팔로잉" : "+ 팔로우");
-                followButton.setTextColor(getResources().getColor((isFollowing)? R.color.icons : R.color.accent));
+                followButton.setTextColor(getResources().getColor((isFollowing) ? R.color.icons : R.color.accent));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -498,6 +519,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
             BottomSheet.Builder bottomSheetBuilder = new BottomSheet.Builder(getActivity());
             bottomSheetBuilder.title("컬렉션에 담기");
+            bottomSheetBuilder.sheet(0, "+ 새 컬렉션 만들기");
             for (Collection collection : collections) {
                 if (collection.getCollectionId() != 0)
                     bottomSheetBuilder.sheet(collection.getCollectionId(), collection.getCollectionName());
@@ -505,8 +527,14 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             bottomSheetBuilder.listener(new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface _dialog, int which) {
-                    dialog.show();
-                    new Collect().start(Event.collect(fashion.getRateId(), which));
+                    if (which != 0) {
+                        dialog.show();
+                        new Collect().start(Event.collect(fashion.getRateId(), which));
+                    }
+                    else {
+                        Intent makeCollection = new Intent(getActivity(), CollectionActivity.class);
+                        getActivity().startActivityForResult(makeCollection, COLLECTION);
+                    }
                 }
             }).show();
 
@@ -520,11 +548,25 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(JSONObject result) {
             try {
                 if (result.getBoolean("success")) {
-                    dialog.dismiss();
                     Toast.makeText(getActivity(), "컬렉션에 추가되었습니다", Toast.LENGTH_LONG).show();
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dialog.dismiss();
+            }
+        }
+    }
+
+    private class MakeCollection extends HTTPClient<CollectionData> {
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            try {
+                new Collect().start(Event.collect(fashion.getRateId(), result.getInt("id")));
+            } catch (Exception e) {
+                dialog.dismiss();
                 e.printStackTrace();
             }
         }

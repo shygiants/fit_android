@@ -64,7 +64,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
     FashionCardAdapter fashionCardAdapter;
     StaggeredGridLayoutManager fashionFeedLayoutManager;
 
-    FragmentManager fragmentManager;
+    public FragmentManager fragmentManager;
     String context;
     int collection_id;
     String user_id;
@@ -136,7 +136,6 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     }
                     if (visibleItemCount + totalPastVisibleItems >= totalItemCount) {
                         moreExists = false;
-                        Log.i("FeedFragment", "loadMore()");
                         fashionCardAdapter.loadMore();
                     }
                 }
@@ -154,7 +153,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         detailFragment.setArguments(arg);
 
         fragmentManager.beginTransaction()
-                .replace(R.id.tabContainer, detailFragment)
+                .replace(R.id.tabContainer, detailFragment, DETAIL)
                 .addToBackStack(null)
                 .commit();
         fragmentManager.executePendingTransactions();

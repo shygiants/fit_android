@@ -1,6 +1,7 @@
 package kr.ac.korea.ee.fit.model;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.json.JSONObject;
 
