@@ -85,8 +85,6 @@ public class CollectionFragment extends Fragment implements View.OnClickListener
             likeButton.setSelected(isLiked);
         }
 
-        Log.i("CollectionFragment", desc);
-
         view.findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

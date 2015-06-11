@@ -22,11 +22,11 @@
             android:adjustViewBounds="true"/>
 
         <LinearLayout
+            android:id="@+id/editor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <kr.ac.korea.ee.fit.core.CircleImageView
-                android:id="@+id/editor"
                 android:src="@mipmap/ic_person_black_48dp"
                 android:layout_width="28dp"
                 android:layout_height="28dp"

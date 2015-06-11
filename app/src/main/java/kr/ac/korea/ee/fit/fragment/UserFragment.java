@@ -278,8 +278,11 @@ public class UserFragment extends Fragment implements View.OnClickListener, Swip
         ArrayList<Collection> collections = new ArrayList<>();
 
         public void clearCollections() {
-            for (Collection collection : collections)
-                collection.getThumbnail().recycle();
+            for (Collection collection : collections) {
+                if (collection.getThumbnail() != null)
+                    collection.getThumbnail().recycle();
+            }
+
 
             collections.clear();
             notifyDataSetChanged();

@@ -24,6 +24,7 @@ public class Fashion {
     String createDate;
     int rate;
     int rateId;
+    int ratingType;
     boolean following;
 
     public Fashion(JSONObject fashion) {
@@ -74,4 +75,8 @@ public class Fashion {
     public String getNickname() { return nickname; }
 
     public String getVendorName() { return vendorName; }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
 }

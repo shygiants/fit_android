@@ -279,7 +279,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 break;
         }
         dialog.show();
-        RateTask rate = new RateTask((ImageButton)view);
+        RateTask rate = new RateTask(ratingType);
         rate.start(Event.rate(User.getDeviceUserId(), fashionId, ratingType));
     }
 
@@ -409,12 +409,12 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     }
 
     private class RateTask extends HTTPClient<Event> {
+        int ratingType;
 
-        ImageButton buttonClicked;
-
-        public RateTask(ImageButton buttonClicked) {
-            this.buttonClicked = buttonClicked;
+        public RateTask(int ratingType) {
+            this.ratingType = ratingType;
         }
+
         @Override
         protected void onPostExecute(JSONObject response) {
             try {
@@ -422,7 +422,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                     fashion.setRateId(response.getInt("insert_id"));
                     for (int i = 0; i < 3; i++)
                         rateButtons[i].setSelected(false);
-                    buttonClicked.setSelected(true);
+                    rateButtons[ratingType - 1].setSelected(true);
+                    fashion.setRate(ratingType);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

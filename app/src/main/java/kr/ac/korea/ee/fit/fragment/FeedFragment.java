@@ -176,6 +176,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             public CardViewHolder(View view) {
                 super(view);
                 cardView = view;
+                view.findViewById(R.id.editor).setOnClickListener(this);
                 fashionImg = (ImageView)view.findViewById(R.id.fashionImg);
                 editorName = (TextView)view.findViewById(R.id.editorName);
                 vendor = (TextView)view.findViewById(R.id.vendor);
@@ -221,6 +222,16 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     case R.id.button3:
                         ratingType = 3;
                         break;
+                    case R.id.editor:
+                        UserFragment editorFragment = new UserFragment();
+                        Bundle arg = new Bundle();
+                        arg.putString(UserFragment.USER_ID, fashionCard.getEditorId());
+                        editorFragment.setArguments(arg);
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.tabContainer, editorFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        return;
                     default:
                         startDetailView(fashionCard);
                         return;
@@ -238,6 +249,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 public RateTask(int ratingType) {
                     this.ratingType = ratingType;
                 }
+
                 @Override
                 protected void onPostExecute(JSONObject response) {
                     try {
@@ -369,7 +381,8 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             for (FashionCard card : cards)
                 card.getImage().recycle();
             for (Pair<Collection, Integer> pair : collections)
-                pair.first.getThumbnail().recycle();
+                if (pair.first.getThumbnail() != null)
+                    pair.first.getThumbnail().recycle();
 
             cards.clear();
             collections.clear();
