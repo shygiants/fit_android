@@ -50,6 +50,9 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
     public static final String COLLECTION = "COLLECTION";
     public static final String DETAIL = "DETAIL";
 
+    static final int POPULAR = 1;
+    static final int FOLLOW_POPULAR = 2;
+
     FashionCardAdapter fashionCardAdapter;
     StaggeredGridLayoutManager fashionFeedLayoutManager;
 
@@ -259,6 +262,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             ImageView thumbnail;
             TextView collectionTitle;
             Collection collection;
+            int type;
             TextView makerNameText;
             TextView descText;
 
@@ -272,13 +276,13 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 makerNameText = (TextView)view.findViewById(R.id.makerName);
                 descText = (TextView)view.findViewById(R.id.desc);
                 descText.setVisibility(View.VISIBLE);
-                descText.setText("인기있는 컬렉션");
 
                 view.setOnClickListener(this);
             }
 
-            public void setView(Collection collection) {
-                this.collection = collection;
+            public void setView(Pair<Collection, Integer> pair) {
+                collection = pair.first;
+                type = pair.second;
                 collectionTitle.setText(collection.getCollectionName());
                 String nickname = collection.getMakerNickname();
                 makerNameText.setText((nickname.equals("null")) ? collection.getMakerName() : nickname);
@@ -287,6 +291,17 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     thumbnail.setImageBitmap(tn);
                 else
                     thumbnail.setImageDrawable(getResources().getDrawable(R.mipmap.bg_collection_not_inserted));
+
+                String desc = null;
+                switch (type) {
+                    case POPULAR:
+                        desc = "인기있는 컬렉션";
+                        break;
+                    case FOLLOW_POPULAR:
+                        desc = "팔로우 기반 컬렉션";
+                        break;
+                }
+                descText.setText(desc);
             }
 
             @Override
@@ -307,11 +322,12 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         }
 
         ArrayList<FashionCard> cards = new ArrayList<>();
-        ArrayList<Collection> collections = new ArrayList<>();
+        ArrayList<Pair<Collection, Integer>> collections = new ArrayList<>();
         ArrayList<Pair<Boolean, Integer>> isCard = new ArrayList<>();
         String[] ratingTypes;
         Feed feed;
         CollectionData getPopular;
+        CollectionData getFollowPopular;
         int page = 0;
 
         public FashionCardAdapter() {
@@ -319,6 +335,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 case COLLECTION:
                     feed = Feed.getCollection(collection_id, user_id);
                     break;
+                case DETAIL:
                 case SEARCH:
                     feed = Feed.getFeed();
                     break;
@@ -326,13 +343,18 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     feed = Feed.getRecommended();
                     getPopular = CollectionData.getPopular();
                     getPopular.setPage(0);
+                    getFollowPopular = CollectionData.getFollowPopular();
+                    getFollowPopular.setPage(0);
             }
             feed.setPage(0);
 
             FeedTask feeder = new FeedTask();
             feeder.start(feed);
-            if (getPopular != null)
-                new GetCollections().start(getPopular);
+            if (getPopular != null) {
+                new GetCollections(POPULAR).start(getPopular);
+                new GetCollections(FOLLOW_POPULAR).start(getFollowPopular);
+            }
+
         }
 
         public void clearCards() {
@@ -346,8 +368,8 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         public void clear() {
             for (FashionCard card : cards)
                 card.getImage().recycle();
-            for (Collection collection : collections)
-                collection.getThumbnail().recycle();
+            for (Pair<Collection, Integer> pair : collections)
+                pair.first.getThumbnail().recycle();
 
             cards.clear();
             collections.clear();
@@ -376,7 +398,9 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             new FeedTask().start(feed);
             if (getPopular != null) {
                 getPopular.setPage(page);
-                new GetCollections().start(getPopular);
+                getFollowPopular.setPage(page);
+                new GetCollections(POPULAR).start(getPopular);
+                new GetCollections(FOLLOW_POPULAR).start(getFollowPopular);
             }
         }
 
@@ -385,7 +409,9 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             feed.setPage(page);
             if (getPopular != null) {
                 getPopular.setPage(page);
-                new GetCollections().start(getPopular);
+                getFollowPopular.setPage(page);
+                new GetCollections(POPULAR).start(getPopular);
+                new GetCollections(FOLLOW_POPULAR).start(getFollowPopular);
             }
 
             new FeedTask().start(feed);
@@ -397,8 +423,8 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             notifyItemInserted(getItemCount() - 1);
         }
 
-        public void addCollection(Collection collection) {
-            collections.add(collection);
+        public void addCollection(Collection collection, int type) {
+            collections.add(new Pair<>(collection, type));
             isCard.add(new Pair<>(false, collections.size() - 1));
             notifyItemInserted(getItemCount() - 1);
         }
@@ -489,17 +515,23 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             @Override
             protected void onPostExecute(Void result) {
                 swipe.setRefreshing(false);
-                if (get == Feed.LIMIT)
+                if (get == feed.LIMIT)
                     moreExists = true;
             }
         }
 
         private class GetCollections extends HTTPClient<CollectionData> {
 
+            int type;
+
+            public GetCollections(int type) {
+                this.type = type;
+            }
+
             @Override
             protected void onPostExecute(JSONObject result) {
                 try {
-                    GetThumbnail getThumbnail = new GetThumbnail();
+                    GetThumbnail getThumbnail = new GetThumbnail(type);
                     getThumbnail.execute(result);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -512,7 +544,12 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
         private class GetThumbnail extends AsyncTask<JSONObject, Collection, Void> {
 
-            int position;
+            int get;
+            int type;
+
+            public GetThumbnail(int type) {
+                this.type = type;
+            }
 
             @Override
             protected void onPreExecute() { super.onPreExecute(); }
@@ -525,7 +562,8 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     JSONArray collections = response.getJSONArray("collections");
 
                     int arraySize = collections.length();
-                    for (position = 0; position < arraySize; position++) {
+                    get = arraySize;
+                    for (int position = 0; position < arraySize; position++) {
                         Collection collection = new Collection(collections.getJSONObject(position), true);
                         String path = collection.getThumbnailPath();
                         Bitmap thumbnail = null;
@@ -547,12 +585,14 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
             @Override
             protected void onProgressUpdate(Collection... values) {
-                addCollection(values[0]);
+                addCollection(values[0], type);
             }
 
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
+                if (get == getPopular.LIMIT)
+                    moreExists = true;
             }
         }
     }

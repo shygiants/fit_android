@@ -12,7 +12,7 @@ import kr.ac.korea.ee.fit.model.User;
 public class CollectionData extends PostData {
 
     String url;
-    public static final int LIMIT = 2;
+    public int LIMIT = 2;
 
     public static CollectionData makeCollection(String name, String description) {
         CollectionData makeCollection = new CollectionData();
@@ -51,6 +51,16 @@ public class CollectionData extends PostData {
         CollectionData getPopular = new CollectionData();
 
         getPopular.url = "http://" + ipAddress + "/collection/getPopular";
+
+        return getPopular;
+    }
+
+    public static CollectionData getFollowPopular() {
+        CollectionData getPopular = new CollectionData();
+
+        getPopular.url = "http://" + ipAddress + "/collection/getFollowPopular";
+
+        getPopular.add("user_id", User.getDeviceUserId());
 
         return getPopular;
     }

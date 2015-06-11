@@ -17,7 +17,7 @@ import kr.ac.korea.ee.fit.model.User;
  */
 public class Feed extends PostData {
 
-    public static final int LIMIT = 5;
+    public int LIMIT = 5;
 
     String url;
 
@@ -33,6 +33,8 @@ public class Feed extends PostData {
         feed.url = "http://" + ipAddress + "/feed/getRecommended";
 
         feed.add("user_id", User.getDeviceUserId());
+
+        feed.LIMIT = 3;
 
         return feed;
     }
