@@ -71,6 +71,17 @@ public class Event extends PostData {
         return collect;
     }
 
+    public static Event likeCollection(int collectionId) {
+        Event likeCollection = new Event();
+
+        likeCollection.url = "http://" + ipAddress + "/eventServer/likeCollection";
+
+        likeCollection.add("user_id", User.getDeviceUserId());
+        likeCollection.add("collection_id", collectionId);
+
+        return likeCollection;
+    }
+
     @Override
     public String getURL() {
         return url;

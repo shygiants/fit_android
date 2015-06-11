@@ -31,6 +31,17 @@ public class CollectionData extends PostData {
         return getCollections;
     }
 
+    public static CollectionData isLiked(int collectionId) {
+        CollectionData isLiked = new CollectionData();
+
+        isLiked.url = "http://" + ipAddress + "/collection/isLiked";
+
+        isLiked.add("user_id", User.getDeviceUserId());
+        isLiked.add("collection_id", collectionId);
+
+        return isLiked;
+    }
+
     @Override
     public String getURL() {
         return url;

@@ -19,6 +19,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>
+        <ImageButton
+            android:id="@+id/likeButton"
+            android:background="@null"
+            android:src="@drawable/button_fit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_alignParentEnd="true"
+            android:paddingLeft="8dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp" />
         <TextView
             android:text="title"
             android:id="@+id/collectionTitle"
