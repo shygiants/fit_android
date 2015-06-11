@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -148,7 +147,7 @@ public class UserFragment extends Fragment implements View.OnClickListener, Swip
 
     public void setView() {
         String nickname = user.getNickName();
-        nickNameText.setText((nickname.equals("null"))? user.getName() : user.getNickName());
+        nickNameText.setText((nickname.equals("null"))? user.getName() : nickname);
         nameText.setText(user.getName());
         ratingText.setText(String.valueOf(user.getRating()));
         followerText.setText(String.valueOf(user.getFollower()));
@@ -311,7 +310,7 @@ public class UserFragment extends Fragment implements View.OnClickListener, Swip
         }
 
         @Override
-        public int getItemViewType(int position) {
+         public int getItemViewType(int position) {
             return (isDeviceUser && position + 1 == getItemCount())? 1 : 0;
         }
     }
@@ -365,12 +364,13 @@ public class UserFragment extends Fragment implements View.OnClickListener, Swip
 
                 int arraySize = collections.length();
                 for (position = 0; position < arraySize; position++) {
-                    Collection collection = new Collection(collections.getJSONObject(position));
+                    Collection collection = new Collection(collections.getJSONObject(position), false);
                     String path = collection.getThumbnailPath();
                     Bitmap thumbnail = null;
                     if (path != null) {
                         Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(path).getContent());
                         thumbnail = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+                        bitmap.recycle();
                     }
                     collection.setThumbnail(thumbnail);
                     publishProgress(collection);

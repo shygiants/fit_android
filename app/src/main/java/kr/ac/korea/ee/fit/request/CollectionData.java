@@ -1,5 +1,9 @@
 package kr.ac.korea.ee.fit.request;
 
+import org.apache.http.NameValuePair;
+
+import java.util.ArrayList;
+
 import kr.ac.korea.ee.fit.model.User;
 
 /**
@@ -8,6 +12,7 @@ import kr.ac.korea.ee.fit.model.User;
 public class CollectionData extends PostData {
 
     String url;
+    public static final int LIMIT = 2;
 
     public static CollectionData makeCollection(String name, String description) {
         CollectionData makeCollection = new CollectionData();
@@ -40,6 +45,32 @@ public class CollectionData extends PostData {
         isLiked.add("collection_id", collectionId);
 
         return isLiked;
+    }
+
+    public static CollectionData getPopular() {
+        CollectionData getPopular = new CollectionData();
+
+        getPopular.url = "http://" + ipAddress + "/collection/getPopular";
+
+        return getPopular;
+    }
+
+    public void setPage(int page) {
+
+        ArrayList<NameValuePair> buffer = new ArrayList<>();
+
+        for (NameValuePair pair : data) {
+            String name = pair.getName();
+            if (name.equals("offset") || name.equals("limit"))
+                buffer.add(pair);
+        }
+
+        for (NameValuePair pair : buffer) {
+            data.remove(pair);
+        }
+
+        add("offset", LIMIT * page);
+        add("limit", LIMIT);
     }
 
     @Override

@@ -78,8 +78,12 @@ public class CollectionFragment extends Fragment implements View.OnClickListener
         collectionTitle.setText(name);
 
         likeButton = (ImageButton)view.findViewById(R.id.likeButton);
-        likeButton.setOnClickListener(this);
-        likeButton.setSelected(isLiked);
+        if (collection_id == 0)
+            likeButton.setVisibility(View.GONE);
+        else {
+            likeButton.setOnClickListener(this);
+            likeButton.setSelected(isLiked);
+        }
 
         Log.i("CollectionFragment", desc);
 

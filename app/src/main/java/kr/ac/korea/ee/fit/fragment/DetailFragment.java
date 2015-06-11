@@ -510,7 +510,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
                 int arraySize = collections_json.length();
                 for (position = 0; position < arraySize; position++) {
-                    Collection collection = new Collection(collections_json.getJSONObject(position));
+                    Collection collection = new Collection(collections_json.getJSONObject(position), false);
 //                    String path = collection.getThumbnailPath();
 //                    Bitmap thumbnail = null;
 //                    if (path != null) {

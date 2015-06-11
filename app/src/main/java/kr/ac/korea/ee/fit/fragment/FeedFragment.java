@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,10 @@ import java.util.ArrayList;
 
 import kr.ac.korea.ee.fit.R;
 import kr.ac.korea.ee.fit.client.HTTPClient;
+import kr.ac.korea.ee.fit.model.Collection;
 import kr.ac.korea.ee.fit.model.FashionCard;
 import kr.ac.korea.ee.fit.model.User;
+import kr.ac.korea.ee.fit.request.CollectionData;
 import kr.ac.korea.ee.fit.request.Event;
 import kr.ac.korea.ee.fit.request.Feed;
 
@@ -154,7 +157,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         fashionCardAdapter.refresh(getFiltered);
     }
 
-    private class FashionCardAdapter extends RecyclerView.Adapter<FashionCardAdapter.CardViewHolder> {
+    private class FashionCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -165,6 +168,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             View cardView;
             int fashionId;
             FashionCard fashionCard;
+            TextView descText;
 
             public CardViewHolder(View view) {
                 super(view);
@@ -176,6 +180,11 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 button[0] = (ImageButton)view.findViewById(R.id.button1);
                 button[1] = (ImageButton)view.findViewById(R.id.button2);
                 button[2] = (ImageButton)view.findViewById(R.id.button3);
+                if (context == TAB) {
+                    descText = (TextView) view.findViewById(R.id.desc);
+                    descText.setVisibility(View.VISIBLE);
+                    descText.setText("회원님의 취향에 맞는 패션");
+                }
             }
 
             public void setView(FashionCard fashionCard, String[] ratingTypes) {
@@ -245,14 +254,67 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
             }
         }
 
-        ArrayList<FashionCard> cards;
+        public class CollectionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+            ImageView thumbnail;
+            TextView collectionTitle;
+            Collection collection;
+            TextView makerNameText;
+            TextView descText;
+
+            public CollectionHolder(View view) {
+                super(view);
+
+                view.findViewById(R.id.maker).setVisibility(View.VISIBLE);
+
+                thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
+                collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
+                makerNameText = (TextView)view.findViewById(R.id.makerName);
+                descText = (TextView)view.findViewById(R.id.desc);
+                descText.setVisibility(View.VISIBLE);
+                descText.setText("인기있는 컬렉션");
+
+                view.setOnClickListener(this);
+            }
+
+            public void setView(Collection collection) {
+                this.collection = collection;
+                collectionTitle.setText(collection.getCollectionName());
+                String nickname = collection.getMakerNickname();
+                makerNameText.setText((nickname.equals("null")) ? collection.getMakerName() : nickname);
+                Bitmap tn = collection.getThumbnail();
+                if (tn != null)
+                    thumbnail.setImageBitmap(tn);
+                else
+                    thumbnail.setImageDrawable(getResources().getDrawable(R.mipmap.bg_collection_not_inserted));
+            }
+
+            @Override
+            public void onClick(View v) {
+                CollectionFragment collectionFragment = new CollectionFragment();
+                Bundle arg = new Bundle();
+                arg.putInt(CollectionFragment.COLLECTION_ID, collection.getCollectionId());
+                arg.putString(CollectionFragment.USER_ID, User.getDeviceUserId());
+                arg.putString(CollectionFragment.NAME, collection.getCollectionName());
+                arg.putString(CollectionFragment.DESC, collection.getCollectionDesc());
+                collectionFragment.setArguments(arg);
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.tabContainer, collectionFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
+
+        ArrayList<FashionCard> cards = new ArrayList<>();
+        ArrayList<Collection> collections = new ArrayList<>();
+        ArrayList<Pair<Boolean, Integer>> isCard = new ArrayList<>();
         String[] ratingTypes;
         Feed feed;
+        CollectionData getPopular;
         int page = 0;
 
         public FashionCardAdapter() {
-            cards = new ArrayList<>();
-
             switch (context) {
                 case COLLECTION:
                     feed = Feed.getCollection(collection_id, user_id);
@@ -262,17 +324,34 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                     break;
                 default:
                     feed = Feed.getRecommended();
+                    getPopular = CollectionData.getPopular();
+                    getPopular.setPage(0);
             }
             feed.setPage(0);
 
             FeedTask feeder = new FeedTask();
             feeder.start(feed);
+            if (getPopular != null)
+                new GetCollections().start(getPopular);
         }
 
         public void clearCards() {
             for (FashionCard card : cards)
                 card.getImage().recycle();
             cards.clear();
+            isCard.clear();
+            notifyDataSetChanged();
+        }
+
+        public void clear() {
+            for (FashionCard card : cards)
+                card.getImage().recycle();
+            for (Collection collection : collections)
+                collection.getThumbnail().recycle();
+
+            cards.clear();
+            collections.clear();
+            isCard.clear();
             notifyDataSetChanged();
         }
 
@@ -287,43 +366,68 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
         }
 
         public void refresh() {
-            clearCards();
+            if (context == TAB)
+                clear();
+            else
+                clearCards();
 
             page = 0;
             feed.setPage(page);
-            FeedTask feeder = new FeedTask();
-            feeder.start(feed);
+            new FeedTask().start(feed);
+            if (getPopular != null) {
+                getPopular.setPage(page);
+                new GetCollections().start(getPopular);
+            }
         }
 
         public void loadMore() {
             page++;
             feed.setPage(page);
+            if (getPopular != null) {
+                getPopular.setPage(page);
+                new GetCollections().start(getPopular);
+            }
+
             new FeedTask().start(feed);
         }
 
         public void addCard(FashionCard card) {
             cards.add(card);
-            notifyItemInserted(cards.size() - 1);
+            isCard.add(new Pair<>(true, cards.size() - 1));
+            notifyItemInserted(getItemCount() - 1);
+        }
+
+        public void addCollection(Collection collection) {
+            collections.add(collection);
+            isCard.add(new Pair<>(false, collections.size() - 1));
+            notifyItemInserted(getItemCount() - 1);
         }
 
         @Override
         public int getItemCount() {
-            return cards.size();
+            return isCard.size();
         }
 
         @Override
-        public void onBindViewHolder(CardViewHolder cardViewHolder, int position) {
-            FashionCard card = cards.get(position);
-            cardViewHolder.setView(card, ratingTypes);
+        public int getItemViewType(int position) {
+            return (isCard.get(position).first)? 1 : 0;
         }
 
         @Override
-        public CardViewHolder onCreateViewHolder(ViewGroup viewGroup, int layout) {
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (viewHolder.getClass().equals(CardViewHolder.class))
+                ((CardViewHolder)viewHolder).setView(cards.get(isCard.get(position).second), ratingTypes);
+            else
+                ((CollectionHolder)viewHolder).setView(collections.get(isCard.get(position).second));
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             View itemView = LayoutInflater.
                     from(viewGroup.getContext()).
-                    inflate(R.layout.card_fashion, viewGroup, false);
+                    inflate((viewType == 1)? R.layout.card_fashion : R.layout.card_collection, viewGroup, false);
 
-            return new CardViewHolder(itemView);
+            return (viewType == 1)? new CardViewHolder(itemView) : new CollectionHolder(itemView);
         }
 
         private class FeedTask extends HTTPClient<Feed> {
@@ -387,6 +491,68 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                 swipe.setRefreshing(false);
                 if (get == Feed.LIMIT)
                     moreExists = true;
+            }
+        }
+
+        private class GetCollections extends HTTPClient<CollectionData> {
+
+            @Override
+            protected void onPostExecute(JSONObject result) {
+                try {
+                    GetThumbnail getThumbnail = new GetThumbnail();
+                    getThumbnail.execute(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    dialog.dismiss();
+                    swipe.setRefreshing(false);
+                }
+            }
+        }
+
+        private class GetThumbnail extends AsyncTask<JSONObject, Collection, Void> {
+
+            int position;
+
+            @Override
+            protected void onPreExecute() { super.onPreExecute(); }
+
+            @Override
+            protected Void doInBackground(JSONObject... params) {
+                JSONObject response = params[0];
+
+                try {
+                    JSONArray collections = response.getJSONArray("collections");
+
+                    int arraySize = collections.length();
+                    for (position = 0; position < arraySize; position++) {
+                        Collection collection = new Collection(collections.getJSONObject(position), true);
+                        String path = collection.getThumbnailPath();
+                        Bitmap thumbnail = null;
+                        if (path != null) {
+                            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(path).getContent());
+                            thumbnail = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+                            bitmap.recycle();
+                        }
+                        collection.setThumbnail(thumbnail);
+                        publishProgress(collection);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // TODO: Exception
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Collection... values) {
+                addCollection(values[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
             }
         }
     }

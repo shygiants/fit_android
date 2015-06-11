@@ -14,6 +14,8 @@ public class Collection {
     String collectionName;
     String collectionDesc;
     String thumbnailPath;
+    String makerName;
+    String makerNickname;
     Bitmap thumbnail;
 
     public Collection(int collectionId, String userId, String collectionName, Bitmap thumbnail) {
@@ -23,7 +25,7 @@ public class Collection {
         this.thumbnail = thumbnail;
     }
 
-    public Collection(JSONObject jsonObject) {
+    public Collection(JSONObject jsonObject, boolean showMaker) {
         try {
             collectionId = jsonObject.getInt("id");
             userId = jsonObject.getString("user_id");
@@ -32,6 +34,11 @@ public class Collection {
             thumbnailPath = jsonObject.getString("thumbnail");
             if (thumbnailPath.equals("null"))
                 thumbnailPath = null;
+            if (showMaker) {
+                makerName = jsonObject.getString("last_name") + jsonObject.getString("first_name");
+                makerNickname = jsonObject.getString("nick_name");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,6 +72,14 @@ public class Collection {
 
     public void setThumbnail(Bitmap thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public String getMakerName() {
+        return makerName;
+    }
+
+    public String getMakerNickname() {
+        return makerNickname;
     }
 
 }
