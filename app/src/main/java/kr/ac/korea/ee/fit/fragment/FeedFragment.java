@@ -227,7 +227,7 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
                         Bundle arg = new Bundle();
                         arg.putString(UserFragment.USER_ID, fashionCard.getEditorId());
                         editorFragment.setArguments(arg);
-                        getFragmentManager().beginTransaction()
+                        fragmentManager.beginTransaction()
                                 .replace(R.id.tabContainer, editorFragment)
                                 .addToBackStack(null)
                                 .commit();
@@ -280,8 +280,9 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
             public CollectionHolder(View view) {
                 super(view);
-
-                view.findViewById(R.id.maker).setVisibility(View.VISIBLE);
+                View makerView = view.findViewById(R.id.maker);
+                makerView.setVisibility(View.VISIBLE);
+                makerView.setOnClickListener(this);
 
                 thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
                 collectionTitle = (TextView)view.findViewById(R.id.collectionTitle);
@@ -318,18 +319,31 @@ public class FeedFragment extends android.support.v4.app.Fragment implements Swi
 
             @Override
             public void onClick(View v) {
-                CollectionFragment collectionFragment = new CollectionFragment();
                 Bundle arg = new Bundle();
-                arg.putInt(CollectionFragment.COLLECTION_ID, collection.getCollectionId());
-                arg.putString(CollectionFragment.USER_ID, User.getDeviceUserId());
-                arg.putString(CollectionFragment.NAME, collection.getCollectionName());
-                arg.putString(CollectionFragment.DESC, collection.getCollectionDesc());
-                collectionFragment.setArguments(arg);
+                switch (v.getId()) {
+                    case R.id.maker:
+                        UserFragment editorFragment = new UserFragment();
+                        arg.putString(UserFragment.USER_ID, collection.getUserId());
+                        editorFragment.setArguments(arg);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.tabContainer, editorFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        break;
+                    default:
+                        CollectionFragment collectionFragment = new CollectionFragment();
+                        arg.putInt(CollectionFragment.COLLECTION_ID, collection.getCollectionId());
+                        arg.putString(CollectionFragment.USER_ID, User.getDeviceUserId());
+                        arg.putString(CollectionFragment.NAME, collection.getCollectionName());
+                        arg.putString(CollectionFragment.DESC, collection.getCollectionDesc());
+                        collectionFragment.setArguments(arg);
 
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.tabContainer, collectionFragment)
-                        .addToBackStack(null)
-                        .commit();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.tabContainer, collectionFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        break;
+                }
             }
         }
 
